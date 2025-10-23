@@ -1,5 +1,5 @@
 {
-  "name": "@cvians/core",
+  "name": "@codvista/cvians-core",
   "version": "0.2.0",
   "description": "Core components for the Cvians UI library - Excel-like tables and more",
   "type": "module",
