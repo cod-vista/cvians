@@ -1,6 +1,6 @@
 {
   "name": "@codvista/cvians-core",
-  "version": "0.2.1",
+  "version": "1.0.0",
   "description": "Core components for the Cvians UI library - Excel-like tables and more",
   "type": "module",
   "main": "./dist/index.js",
@@ -10,9 +10,11 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "require": "./dist/index.cjs",
+      "default": "./dist/index.js"
     },
-    "./styles.css": "./dist/styles.css"
+    "./styles.css": "./dist/styles.css",
+    "./package.json": "./package.json"
   },
   "files": [
     "dist",
@@ -56,14 +58,6 @@
   "peerDependencies": {
     "react": ">=16.8.0",
     "react-dom": ">=16.8.0"
-  },
-  "peerDependenciesMeta": {
-    "react": {
-      "optional": true
-    },
-    "react-dom": {
-      "optional": true
-    }
   },
   "dependencies": {
     "class-variance-authority": "^0.7.0",

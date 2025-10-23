@@ -1,5 +1,11 @@
 # @codvista/cvians-core
 
+## 1.0.0
+
+### Major Changes
+
+- breaking change, fixed the runtime error of jsx
+
 ## 0.2.1
 
 ### Patch Changes

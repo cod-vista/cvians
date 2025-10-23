@@ -9,8 +9,10 @@ export default defineConfig({
   clean: true,
   external: ['react', 'react-dom', 'preact'],
   esbuildOptions: (options) => {
-    options.jsx = 'automatic'
-    options.jsxDev = false
+    // Use React.createElement instead of jsx runtime to avoid bundling issues
+    options.jsx = 'transform'
+    options.jsxFactory = 'React.createElement'
+    options.jsxFragment = 'React.Fragment'
   },
   onSuccess: async () => {
     console.log('Build completed successfully!')
