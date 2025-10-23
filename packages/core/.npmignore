@@ -1,0 +1,28 @@
+# Source files
+src/
+tsconfig.json
+tsup.config.ts
+
+# Development files
+.turbo/
+node_modules/
+.vscode/
+.env*
+
+# Build artifacts
+*.tsbuildinfo
+.rollup.cache
+
+# Testing
+coverage/
+test/
+*.test.*
+*.spec.*
+
+# Documentation (except README)
+docs/
+*.md
+!README.md
+
+# CI/CD
+.github/

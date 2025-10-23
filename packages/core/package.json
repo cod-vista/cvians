@@ -1,0 +1,84 @@
+{
+  "name": "@cvians/core",
+  "version": "0.1.0",
+  "description": "Core components for the Cvians UI library - Excel-like tables and more",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./styles.css": "./dist/styles.css"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint src --ext .ts,.tsx",
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "react",
+    "preact",
+    "components",
+    "ui",
+    "typescript",
+    "cvians",
+    "table",
+    "excel",
+    "filtering",
+    "sorting"
+  ],
+  "author": {
+    "name": "Taha Kazmi",
+    "url": "https://github.com/cod-vista"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/cod-vista/cvians#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cod-vista/cvians.git"
+  },
+  "bugs": {
+    "url": "https://github.com/cod-vista/cvians/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0",
+    "react-dom": ">=16.8.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.451.0",
+    "tailwind-merge": "^2.5.3"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "eslint": "^9.13.0",
+    "preact": "^10.24.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tsup": "^8.3.0",
+    "typescript": "^5.6.3"
+  }
+}

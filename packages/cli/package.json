@@ -1,0 +1,64 @@
+{
+  "name": "@cvians/cli",
+  "version": "0.1.0",
+  "description": "CLI tool for installing Cvians UI components",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "cvians": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint src --ext .ts",
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "cli",
+    "components",
+    "ui",
+    "cvians",
+    "installer",
+    "shadcn",
+    "react",
+    "preact"
+  ],
+  "author": {
+    "name": "Taha Kazmi",
+    "url": "https://github.com/cod-vista"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/cod-vista/cvians#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cod-vista/cvians.git"
+  },
+  "bugs": {
+    "url": "https://github.com/cod-vista/cvians/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "commander": "^12.1.0",
+    "fs-extra": "^11.2.0",
+    "ora": "^8.1.1",
+    "prompts": "^2.4.2",
+    "chalk": "^5.3.0"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^22.8.6",
+    "@types/prompts": "^2.4.9",
+    "eslint": "^9.13.0",
+    "tsup": "^8.3.0",
+    "typescript": "^5.6.3"
+  }
+}
