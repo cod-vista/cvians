@@ -32,7 +32,7 @@ importers:
 
   examples:
     dependencies:
-      '@cvians/core':
+      '@codvista/cvians-core':
         specifier: workspace:*
         version: link:../packages/core
       react:
