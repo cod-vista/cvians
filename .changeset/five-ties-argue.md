@@ -3,4 +3,4 @@
 "@codvista/cvians-core": patch
 ---
 
-updated the documentaions and links
+fixing changesets issues
