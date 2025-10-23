@@ -25,8 +25,8 @@ async function getExcelTableContent(): Promise<string> {
     return content
   } catch {
     // Fallback content if file not found
-    return `// Excel Table Component - Install @cvians/core for full functionality
-export * from '@cvians/core'`
+    return `// Excel Table Component - Install @codvista/cvians-core for full functionality
+export * from '@codvista/cvians-core'`
   }
 }
 

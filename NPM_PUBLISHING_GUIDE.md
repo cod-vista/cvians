@@ -56,8 +56,8 @@ npm whoami
 
 ```bash
 # Check if your desired package names are available
-npm info @cvians/core
-npm info @cvians/cli
+npm info @codvista/cvians-core
+npm info @codvista/cvians-cli
 ```
 
 **If packages don't exist (good!):**
@@ -178,8 +178,8 @@ Your setup is working when you see:
 
 - ✅ GitHub Actions show green checkmarks
 - ✅ Packages appear on npmjs.com
-- ✅ CLI installs globally: `npm install -g @cvians/cli`
-- ✅ Components can be imported: `import { ExcelTable } from '@cvians/core'`
+- ✅ CLI installs globally: `npm install -g @codvista/cvians-cli`
+- ✅ Components can be imported: `import { ExcelTable } from '@codvista/cvians-core'`
 
 ## 📊 After Publishing
 
@@ -187,21 +187,21 @@ Test your published packages:
 
 ```bash
 # Test global CLI installation
-npm install -g @cvians/cli
+npm install -g @codvista/cvians-cli
 cvians --help
 
 # Test in a new project
 mkdir test-cvians
 cd test-cvians
 npm init -y
-npm install @cvians/core
+npm install @codvista/cvians-core
 ```
 
 ## 🔗 Monitoring
 
-- **NPM packages**: https://npmjs.com/package/@cvians/core
+- **NPM packages**: https://npmjs.com/package/@codvista/cvians-core
 - **GitHub releases**: https://github.com/cod-vista/cvians/releases
-- **Download stats**: https://npmjs.com/package/@cvians/core
+- **Download stats**: https://npmjs.com/package/@codvista/cvians-core
 
 ---
 

@@ -4,7 +4,7 @@ Your Cvians UI component library is now fully configured and ready for publishin
 
 ## ✅ Pre-Publishing Checklist
 
-- [x] ✅ Package names configured (`@cvians/core`, `@cvians/cli`)
+- [x] ✅ Package names configured (`@codvista/cvians-core`, `@codvista/cvians-cli`)
 - [x] ✅ Repository URLs and metadata added
 - [x] ✅ Individual README files created for each package
 - [x] ✅ Changesets configuration initialized
@@ -36,8 +36,8 @@ Your Cvians UI component library is now fully configured and ready for publishin
 
 ```bash
 # Check if @cvians scope is available
-npm info @cvians/core
-npm info @cvians/cli
+npm info @codvista/cvians-core
+npm info @codvista/cvians-cli
 ```
 
 If the packages don't exist, you're good to go! If they exist, you may need to:
@@ -55,7 +55,7 @@ pnpm changeset
 ```
 
 When prompted:
-1. **Select packages**: Choose both `@cvians/core` and `@cvians/cli`
+1. **Select packages**: Choose both `@codvista/cvians-core` and `@codvista/cvians-cli`
 2. **Change type**: Select `major` (for initial 1.0.0 release) or `minor` (for 0.1.0)
 3. **Summary**: Enter something like "Initial release of Cvians UI components"
 
@@ -141,12 +141,11 @@ Test your published packages:
 
 ```bash
 # Test core package
-npm install @cvians/core
+npm install @codvista/cvians-core
 # or npm install @cod-vista/cvians-core
 
 # Test CLI package  
-npm install -g @cvians/cli
-# or npm install -g @cod-vista/cvians-cli
+npm install -g @codvista/cvians-cli
 ```
 
 ### 2. Test CLI Commands

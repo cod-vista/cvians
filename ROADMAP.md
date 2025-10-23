@@ -6,13 +6,13 @@ Cvians is designed to become a comprehensive component library ecosystem with mu
 
 ## 📦 Current Packages
 
-### ✅ Core Package (`@cvians/core`)
+### ✅ Core Package (`@codvista/cvians-core`)
 - Excel-like table components with filtering and sorting
 - Framework agnostic (React/Preact compatibility)
 - TypeScript-first development
 - Tailwind CSS styling with shadcn/ui design system
 
-### ✅ CLI Package (`@cvians/cli`)
+### ✅ CLI Package (`@codvista/cvians-cli`)
 - Component installation and project initialization
 - Similar to shadcn/ui CLI experience
 - Dynamic component registry

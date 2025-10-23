@@ -1,4 +1,4 @@
-# @cvians/core
+# @codvista/cvians-core
 
 ## 0.2.0
 

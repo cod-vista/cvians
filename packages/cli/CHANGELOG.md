@@ -1,4 +1,4 @@
-# @cvians/cli
+# @codvista/cvians-cli
 
 ## 0.2.0
 

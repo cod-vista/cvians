@@ -1,4 +1,4 @@
-# @cvians/cli
+# @codvista/cvians-cli
 
 CLI tool for installing Cvians UI components. Install components in your project similar to shadcn/ui.
 
@@ -15,13 +15,13 @@ CLI tool for installing Cvians UI components. Install components in your project
 ### Global Installation (Recommended)
 
 ```bash
-npm install -g @cvians/cli
+npm install -g @codvista/cvians-cli
 ```
 
 ### Local Installation
 
 ```bash
-npm install @cvians/cli
+npm install @codvista/cvians-cli
 ```
 
 ## 📖 Usage
@@ -134,7 +134,7 @@ The `components.json` file controls:
 
 ## 📦 Core Package
 
-This CLI installs components from [@cvians/core](https://www.npmjs.com/package/@cvians/core).
+This CLI installs components from [@codvista/cvians-core](https://www.npmjs.com/package/@codvista/cvians-core).
 
 ## 🤝 Contributing
 
@@ -146,7 +146,7 @@ MIT License
 
 ## 🔗 Links
 
-- [Core Components](https://www.npmjs.com/package/@cvians/core)
-- [Documentation](https://cvians.dev)
+- [Core Components](https://www.npmjs.com/package/@codvista/cvians-core)
+- [Documentation](../../DOCUMENTATION.md)
 - [GitHub](https://github.com/cod-vista/cvians)
 - [Issues](https://github.com/cod-vista/cvians/issues)

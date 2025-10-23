@@ -14,8 +14,8 @@ This guide will help you publish the Cvians UI component library to npm so every
 ## 🏷️ Package Naming
 
 The packages will be published under the `@cvians` scope:
-- `@cvians/core` - Core components
-- `@cvians/cli` - CLI installation tool
+- `@codvista/cvians-core` - Core components
+- `@codvista/cvians-cli` - CLI installation tool
 
 If `@cvians` is unavailable, consider:
 - `@your-username/cvians-core`
@@ -27,8 +27,8 @@ If `@cvians` is unavailable, consider:
 ### 1. Verify Package Names
 
 The package names are already set correctly:
-- `@cvians/core`
-- `@cvians/cli`
+- `@codvista/cvians-core`
+- `@codvista/cvians-cli`
 - `@cvians/root` (private)
 
 ### 2. Initialize Changesets
@@ -119,7 +119,7 @@ In your GitHub repository settings, add:
 Your final package structure:
 
 ```
-@cvians/core/
+@codvista/cvians-core/
 ├── dist/
 │   ├── index.js      # ESM build
 │   ├── index.cjs     # CommonJS build
@@ -127,7 +127,7 @@ Your final package structure:
 ├── package.json
 └── README.md
 
-@cvians/cli/
+@codvista/cvians-cli/
 ├── dist/
 │   ├── cli.js        # CLI executable
 │   └── index.js      # Library exports
@@ -141,22 +141,22 @@ After publishing, users can install with:
 
 ```bash
 # Core components
-npm install @cvians/core
+npm install @codvista/cvians-core
 
 # CLI tool (global)
-npm install -g @cvians/cli
+npm install -g @codvista/cvians-cli
 ```
 
 Or use the CLI:
 ```bash
-npx @cvians/cli init
-npx @cvians/cli add excel-table
+npx @codvista/cvians-cli init
+npx @codvista/cvians-cli add excel-table
 ```
 
 ### Alternative Installation (local CLI)
 ```bash
 # Install locally in project
-npm install @cvians/cli
+npm install @codvista/cvians-cli
 npx cvians init
 npx cvians add excel-table
 ```

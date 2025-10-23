@@ -44,8 +44,8 @@ Your Cvians UI library now has:
 
 Based on the dry-run tests:
 
-- **@cvians/core**: 23.4 KB (compressed), 123.2 KB (unpacked)
-- **@cvians/cli**: 5.6 KB (compressed), 28.7 kB (unpacked)
+- **@codvista/cvians-core**: 23.4 KB (compressed), 123.2 KB (unpacked)
+- **@codvista/cvians-cli**: 5.6 KB (compressed), 28.7 kB (unpacked)
 
 Both packages are efficiently sized and ready for distribution!
 

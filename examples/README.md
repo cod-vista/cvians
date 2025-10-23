@@ -1,6 +1,6 @@
-# Excel UI Components - Examples
+# Cvians UI Components - Examples
 
-This directory contains usage examples for the Excel UI Components library.
+This directory contains usage examples for the Cvians UI Components library.
 
 ## Files
 
@@ -37,14 +37,28 @@ import {
   ExcelTableBody,
   ExcelTableRow,
   ExcelTableCell,
-} from '@excel-ui/core'
+} from '@codvista/cvians-core'
 
 // Your component implementation
+```
+
+## Installation
+
+To use these components in your project:
+
+```bash
+# Install the core package
+npm install @codvista/cvians-core
+
+# Or use the CLI tool
+npm install -g @codvista/cvians-cli
+cvians init
+cvians add excel-table
 ```
 
 ## Notes
 
 - The examples use relative imports for development purposes
-- In a real project, you would import from the published npm package
+- In a real project, you would import from the published npm package: `@codvista/cvians-core`
 - All examples are fully typed with TypeScript
 - Components work with both React and Preact

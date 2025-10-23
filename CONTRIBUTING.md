@@ -67,7 +67,7 @@ pnpm test
 pnpm test --watch
 
 # Run tests for specific package
-pnpm --filter @cvians/core test
+pnpm --filter @codvista/cvians-core test
 ```
 
 ## 📝 Code Style
