@@ -20,7 +20,7 @@ importers:
 
   examples:
     dependencies:
-      '@excel-ui/core':
+      '@cvians/core':
         specifier: workspace:*
         version: link:../packages/core
       react:
