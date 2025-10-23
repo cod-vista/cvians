@@ -1,5 +1,11 @@
 # @codvista/cvians-cli
 
+## 0.2.1
+
+### Patch Changes
+
+- fcf6aa8: fixing changesets issues
+
 ## 0.2.0
 
 ### Minor Changes

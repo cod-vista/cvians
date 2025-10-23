@@ -1,6 +1,6 @@
 {
   "name": "@codvista/cvians-core",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Core components for the Cvians UI library - Excel-like tables and more",
   "type": "module",
   "main": "./dist/index.js",
