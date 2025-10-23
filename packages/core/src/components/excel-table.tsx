@@ -29,7 +29,7 @@ interface TableContextType {
 const TableContext = createContext<TableContextType | null>(null)
 
 // Utility function to extract cell value
-const extractCellValue = (cell: ReactNode, dataType: DataType): any => {
+const extractCellValue = (cell: ReactNode, dataType: DataType): string | number | boolean | Date => {
   if (typeof cell === 'string' || typeof cell === 'number') {
     const content = cell
     switch (dataType) {

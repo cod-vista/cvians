@@ -23,14 +23,14 @@ async function getExcelTableContent(): Promise<string> {
   try {
     const content = await fs.readFile(componentPath, 'utf-8')
     return content
-  } catch (error) {
+  } catch {
     // Fallback content if file not found
     return `// Excel Table Component - Install @cvians/core for full functionality
 export * from '@cvians/core'`
   }
 }
 
-export async function installComponent(componentName: string, options: { yes?: boolean } = {}) {
+export async function installComponent(componentName: string, _options: { yes?: boolean } = {}) {
   const spinner = ora('Installing component...').start()
   
   try {

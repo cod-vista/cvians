@@ -3,7 +3,7 @@ import path from 'path'
 import ora from 'ora'
 import chalk from 'chalk'
 
-export async function initProject(options: { yes?: boolean } = {}) {
+export async function initProject(_options: { yes?: boolean } = {}) {
   const spinner = ora('Initializing Cvians UI project...').start()
   
   try {
