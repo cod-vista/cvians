@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import type { ReactNode } from "react"
-import { ChevronDown, ChevronUp, Filter, X, Calendar, Clock } from 'lucide-react'
+import { ChevronDown, ChevronUp, Filter, X, Calendar, Clock, CalendarDays, Folder, FolderOpen, ChevronRight } from 'lucide-react'
 import { Button } from './ui/button'
 import { Checkbox } from './ui/checkbox'
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
@@ -25,7 +25,7 @@ const parseDate = (dateString: string): Date => {
 const getRelativeDate = (type: RelativeDateType): { start: Date, end: Date } => {
   const now = new Date()
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-  
+
   switch (type) {
     case 'today':
       return { start: today, end: today }
@@ -76,28 +76,28 @@ const matchesDateFilter = (dateValue: Date, filter: DateFilter): boolean => {
       if (!filter.value) return false
       const targetDate = parseDate(filter.value)
       return dateValue.toDateString() === targetDate.toDateString()
-    
+
     case 'before':
       if (!filter.value) return false
       const beforeDate = parseDate(filter.value)
       return dateValue < beforeDate
-    
+
     case 'after':
       if (!filter.value) return false
       const afterDate = parseDate(filter.value)
       return dateValue > afterDate
-    
+
     case 'between':
       if (!filter.startDate || !filter.endDate) return false
       const startDate = parseDate(filter.startDate)
       const endDate = parseDate(filter.endDate)
       return dateValue >= startDate && dateValue <= endDate
-    
+
     case 'relative':
       if (!filter.relative) return false
       const { start, end } = getRelativeDate(filter.relative)
       return dateValue >= start && dateValue <= end
-    
+
     default:
       return false
   }
@@ -143,15 +143,15 @@ function DateFilterPopover({ onApplyFilter, onClearFilter, hasActiveFilter, uniq
     'July', 'August', 'September', 'October', 'November', 'December'
   ]
 
-  const relativeOptions: { value: RelativeDateType; label: string }[] = [
-    { value: 'today', label: '📅 Today' },
-    { value: 'yesterday', label: '⏮️ Yesterday' },
-    { value: 'thisWeek', label: '📅 This Week' },
-    { value: 'lastWeek', label: '⏮️ Last Week' },
-    { value: 'thisMonth', label: '📅 This Month' },
-    { value: 'lastMonth', label: '⏮️ Last Month' },
-    { value: 'thisYear', label: '📅 This Year' },
-    { value: 'lastYear', label: '⏮️ Last Year' },
+  const relativeOptions: { value: RelativeDateType; label: string; icon: React.ReactNode }[] = [
+    { value: 'today', label: 'Today', icon: <Calendar className="h-3 w-3" /> },
+    { value: 'yesterday', label: 'Yesterday', icon: <Calendar className="h-3 w-3" /> },
+    { value: 'thisWeek', label: 'This Week', icon: <CalendarDays className="h-3 w-3" /> },
+    { value: 'lastWeek', label: 'Last Week', icon: <CalendarDays className="h-3 w-3" /> },
+    { value: 'thisMonth', label: 'This Month', icon: <CalendarDays className="h-3 w-3" /> },
+    { value: 'lastMonth', label: 'Last Month', icon: <CalendarDays className="h-3 w-3" /> },
+    { value: 'thisYear', label: 'This Year', icon: <CalendarDays className="h-3 w-3" /> },
+    { value: 'lastYear', label: 'Last Year', icon: <CalendarDays className="h-3 w-3" /> },
   ]
 
   // Build hierarchical date structure from unique values
@@ -180,7 +180,7 @@ function DateFilterPopover({ onApplyFilter, onClearFilter, hasActiveFilter, uniq
 
       const yearData = yearMap.get(year)!
       let monthData = yearData.months.find(m => m.month === month)
-      
+
       if (!monthData) {
         monthData = {
           month,
@@ -217,7 +217,7 @@ function DateFilterPopover({ onApplyFilter, onClearFilter, hasActiveFilter, uniq
       const newHierarchy = [...prev]
       const yearData = newHierarchy[yearIndex]
       yearData.selected = !yearData.selected
-      
+
       // Update all months and days
       yearData.months.forEach(month => {
         month.selected = yearData.selected
@@ -225,7 +225,7 @@ function DateFilterPopover({ onApplyFilter, onClearFilter, hasActiveFilter, uniq
           day.selected = yearData.selected
         })
       })
-      
+
       return newHierarchy
     })
   }
@@ -237,15 +237,15 @@ function DateFilterPopover({ onApplyFilter, onClearFilter, hasActiveFilter, uniq
       const yearData = newHierarchy[yearIndex]
       const monthData = yearData.months[monthIndex]
       monthData.selected = !monthData.selected
-      
+
       // Update all days in this month
       monthData.days.forEach(day => {
         day.selected = monthData.selected
       })
-      
+
       // Update year selection based on months
       yearData.selected = yearData.months.every(m => m.selected)
-      
+
       return newHierarchy
     })
   }
@@ -258,13 +258,13 @@ function DateFilterPopover({ onApplyFilter, onClearFilter, hasActiveFilter, uniq
       const monthData = yearData.months[monthIndex]
       const dayData = monthData.days[dayIndex]
       dayData.selected = !dayData.selected
-      
+
       // Update month selection based on days
       monthData.selected = monthData.days.every(d => d.selected)
-      
+
       // Update year selection based on months
       yearData.selected = yearData.months.every(m => m.selected)
-      
+
       return newHierarchy
     })
   }
@@ -298,9 +298,9 @@ function DateFilterPopover({ onApplyFilter, onClearFilter, hasActiveFilter, uniq
       ...(filterType === 'relative' && { relative: selectedRelative }),
     }
 
-    if (filterType === 'relative' || 
-        (filterType === 'between' && startDate && endDate) ||
-        (['equals', 'before', 'after'].includes(filterType) && customDate)) {
+    if (filterType === 'relative' ||
+      (filterType === 'between' && startDate && endDate) ||
+      (['equals', 'before', 'after'].includes(filterType) && customDate)) {
       setSelectedFilters(prev => [...prev, newFilter])
     }
   }
@@ -312,7 +312,7 @@ function DateFilterPopover({ onApplyFilter, onClearFilter, hasActiveFilter, uniq
   const applyFilters = () => {
     if (filterMode === 'hierarchy') {
       const selectedDates: string[] = []
-      
+
       dateHierarchy.forEach(year => {
         year.months.forEach(month => {
           month.days.forEach(day => {
@@ -322,14 +322,13 @@ function DateFilterPopover({ onApplyFilter, onClearFilter, hasActiveFilter, uniq
           })
         })
       })
-      
-      if (selectedDates.length > 0) {
-        const filters: DateFilter[] = selectedDates.map(date => ({
-          type: 'equals',
-          date
-        }))
-        onApplyFilter(filters)
-      }
+
+      // Always apply filters - if no dates selected, pass empty array to clear filters
+      const filters: DateFilter[] = selectedDates.map(date => ({
+        type: 'equals',
+        value: date
+      }))
+      onApplyFilter(filters)
     } else {
       onApplyFilter(selectedFilters)
     }
@@ -373,235 +372,251 @@ function DateFilterPopover({ onApplyFilter, onClearFilter, hasActiveFilter, uniq
   }
 
   return (
-        <div className="p-4">
-          <div className="flex items-center justify-between mb-4">
-            <h4 className="font-medium flex items-center gap-2">
-              <Calendar className="h-4 w-4" />
-              Date Filter
-            </h4>
-            {hasActiveFilter && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={clearAllFilters}
-                className="h-6 px-2"
-              >
-                <X className="h-3 w-3" />
-                Clear
-              </Button>
-            )}
-          </div>
+    <div className="p-4">
+      <div className="flex items-center justify-between mb-4">
+        <h4 className="font-medium flex items-center gap-2">
+          <Calendar className="h-4 w-4" />
+          Date Filter
+        </h4>
+        {hasActiveFilter && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={clearAllFilters}
+            className="h-6 px-2"
+          >
+            <X className="h-3 w-3" />
+            Clear
+          </Button>
+        )}
+      </div>
 
-          {/* Filter Mode Selector */}
-          <div className="space-y-3 mb-4">
-            <div className="grid grid-cols-3 gap-1">
-              <Button
-                variant={filterMode === 'hierarchy' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setFilterMode('hierarchy')}
-                className="text-xs"
-              >
-                📁 Dates
-              </Button>
-              <Button
-                variant={filterMode === 'relative' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setFilterMode('relative')}
-                className="text-xs"
-              >
-                <Clock className="h-3 w-3 mr-1" />
-                Quick
-              </Button>
-              <Button
-                variant={filterMode === 'custom' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setFilterMode('custom')}
-                className="text-xs"
-              >
-                <Calendar className="h-3 w-3 mr-1" />
-                Custom
-              </Button>
-            </div>
+      {/* Filter Mode Selector */}
+      <div className="space-y-3 mb-4">
+        <div className="grid grid-cols-3 gap-1">
+          <Button
+            variant={filterMode === 'hierarchy' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setFilterMode('hierarchy')}
+            className="text-xs"
+          >
+            <CalendarDays className="h-3 w-3 mr-1" />
+            Dates
+          </Button>
+          <Button
+            variant={filterMode === 'relative' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setFilterMode('relative')}
+            className="text-xs"
+          >
+            <Clock className="h-3 w-3 mr-1" />
+            Quick
+          </Button>
+          <Button
+            variant={filterMode === 'custom' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setFilterMode('custom')}
+            className="text-xs"
+          >
+            <Calendar className="h-3 w-3 mr-1" />
+            Custom
+          </Button>
+        </div>
 
-            {filterMode === 'hierarchy' ? (
-              <div className="space-y-2">
-                <label className="text-xs font-medium text-gray-600">Select Dates:</label>
-                <div className="max-h-64 overflow-y-auto border rounded p-2 space-y-1">
-                  {dateHierarchy.map((year, yearIndex) => (
-                    <div key={year.year} className="space-y-1">
-                      <div className="flex items-center space-x-2">
-                        <button
-                          onClick={() => handleYearExpand(yearIndex)}
-                          className="text-xs text-gray-500 hover:text-gray-700"
-                        >
-                          {year.expanded ? '▼' : '▶'}
-                        </button>
-                        <label className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 px-1 rounded">
-                          <input
-                            type="checkbox"
-                            checked={year.selected}
-                            onChange={() => handleYearToggle(yearIndex)}
-                            className="w-3 h-3"
-                          />
-                          <span className="text-sm font-medium text-gray-800">📅 {year.year}</span>
-                        </label>
-                      </div>
-                      
-                      {year.expanded && (
-                        <div className="ml-4 space-y-1">
-                          {year.months.map((month, monthIndex) => (
-                            <div key={month.month} className="space-y-1">
-                              <div className="flex items-center space-x-2">
-                                <button
-                                  onClick={() => handleMonthExpand(yearIndex, monthIndex)}
-                                  className="text-xs text-gray-500 hover:text-gray-700"
+        {filterMode === 'hierarchy' ? (
+          <div className="space-y-2">
+            <label className="text-xs font-medium text-gray-600">Select Dates:</label>
+            <div className="max-h-64 overflow-y-auto border rounded p-2 space-y-1">
+              {dateHierarchy.map((year, yearIndex) => (
+                <div key={year.year} className="space-y-1">
+                  <div className="flex items-center space-x-2">
+                    <button
+                      onClick={() => handleYearExpand(yearIndex)}
+                      className="text-xs text-gray-500 hover:text-gray-700 p-1"
+                    >
+                      {year.expanded ? (
+                        <ChevronDown className="h-3 w-3" />
+                      ) : (
+                        <ChevronRight className="h-3 w-3" />
+                      )}
+                    </button>
+                    <label className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 px-1 rounded">
+                      <input
+                        type="checkbox"
+                        checked={year.selected}
+                        onChange={() => handleYearToggle(yearIndex)}
+                        className="w-3 h-3"
+                      />
+                      <span className="text-sm font-medium text-gray-800 flex items-center">
+                        <Calendar className="h-3 w-3 mr-1" />
+                        {year.year}
+                      </span>
+                    </label>
+                  </div>
+
+                  {year.expanded && (
+                    <div className="ml-4 space-y-1">
+                      {year.months.map((month, monthIndex) => (
+                        <div key={month.month} className="space-y-1">
+                          <div className="flex items-center space-x-2">
+                            <button
+                              onClick={() => handleMonthExpand(yearIndex, monthIndex)}
+                              className="text-xs text-gray-500 hover:text-gray-700 p-1"
+                            >
+                              {month.expanded ? (
+                                <ChevronDown className="h-3 w-3" />
+                              ) : (
+                                <ChevronRight className="h-3 w-3" />
+                              )}
+                            </button>
+                            <label className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 px-1 rounded">
+                              <input
+                                type="checkbox"
+                                checked={month.selected}
+                                onChange={() => handleMonthToggle(yearIndex, monthIndex)}
+                                className="w-3 h-3"
+                              />
+                              <span className="text-sm text-gray-700 flex items-center">
+                                <Calendar className="h-3 w-3 mr-1" />
+                                {month.monthName}
+                              </span>
+                            </label>
+                          </div>
+
+                          {month.expanded && (
+                            <div className="ml-4 space-y-0.5 max-h-32 overflow-y-auto">
+                              {month.days.map((day, dayIndex) => (
+                                <label
+                                  key={`${day.day}-${day.fullDate}`}
+                                  className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 px-1 rounded text-xs"
                                 >
-                                  {month.expanded ? '▼' : '▶'}
-                                </button>
-                                <label className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 px-1 rounded">
                                   <input
                                     type="checkbox"
-                                    checked={month.selected}
-                                    onChange={() => handleMonthToggle(yearIndex, monthIndex)}
+                                    checked={day.selected}
+                                    onChange={() => handleDayToggle(yearIndex, monthIndex, dayIndex)}
                                     className="w-3 h-3"
                                   />
-                                  <span className="text-sm text-gray-700">📅 {month.monthName}</span>
+                                  <span className="text-gray-600">{day.day} - {new Date(day.fullDate).toLocaleDateString()}</span>
                                 </label>
-                              </div>
-                              
-                              {month.expanded && (
-                                <div className="ml-4 space-y-0.5 max-h-32 overflow-y-auto">
-                                  {month.days.map((day, dayIndex) => (
-                                    <label
-                                      key={`${day.day}-${day.fullDate}`}
-                                      className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 px-1 rounded text-xs"
-                                    >
-                                      <input
-                                        type="checkbox"
-                                        checked={day.selected}
-                                        onChange={() => handleDayToggle(yearIndex, monthIndex, dayIndex)}
-                                        className="w-3 h-3"
-                                      />
-                                      <span className="text-gray-600">{day.day} - {new Date(day.fullDate).toLocaleDateString()}</span>
-                                    </label>
-                                  ))}
-                                </div>
-                              )}
+                              ))}
                             </div>
-                          ))}
+                          )}
                         </div>
-                      )}
+                      ))}
                     </div>
-                  ))}
+                  )}
                 </div>
-              </div>
-            ) : filterMode === 'relative' ? (
-              <div className="space-y-2">
-                <label className="text-xs font-medium text-gray-600">Quick Filters:</label>
-                <div className="grid grid-cols-1 gap-1 max-h-32 overflow-y-auto">
-                  {relativeOptions.map(option => (
-                    <button
-                      key={option.value}
-                      className={cn(
-                        "text-left px-2 py-1 text-xs rounded hover:bg-gray-100",
-                        selectedRelative === option.value && "bg-blue-100 text-blue-700"
-                      )}
-                      onClick={() => setSelectedRelative(option.value)}
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-                <Button size="sm" onClick={handleAddFilter} className="w-full">
-                  Add Quick Filter
+              ))}
+            </div>
+          </div>
+        ) : filterMode === 'relative' ? (
+          <div className="space-y-2">
+            <label className="text-xs font-medium text-gray-600">Quick Filters:</label>
+            <div className="grid grid-cols-1 gap-1 max-h-32 overflow-y-auto">
+              {relativeOptions.map(option => (
+                <button
+                  key={option.value}
+                  className={cn(
+                    "text-left px-2 py-1 text-xs rounded hover:bg-gray-100 flex items-center space-x-2",
+                    selectedRelative === option.value && "bg-blue-100 text-blue-700"
+                  )}
+                  onClick={() => setSelectedRelative(option.value)}
+                >
+                  {option.icon}
+                  <span>{option.label}</span>
+                </button>
+              ))}
+            </div>
+            <Button size="sm" onClick={handleAddFilter} className="w-full">
+              Add Quick Filter
+            </Button>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            <div className="grid grid-cols-3 gap-1">
+              {['equals', 'before', 'after', 'between'].map(type => (
+                <Button
+                  key={type}
+                  variant={filterType === type ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setFilterType(type as DateFilterType)}
+                  className="text-xs capitalize"
+                >
+                  {type}
                 </Button>
+              ))}
+            </div>
+
+            {filterType === 'between' ? (
+              <div className="space-y-2">
+                <div>
+                  <label className="text-xs font-medium text-gray-600">From:</label>
+                  <input
+                    type="date"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    className="w-full px-2 py-1 text-xs border rounded"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-gray-600">To:</label>
+                  <input
+                    type="date"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    className="w-full px-2 py-1 text-xs border rounded"
+                  />
+                </div>
               </div>
             ) : (
-              <div className="space-y-3">
-                <div className="grid grid-cols-3 gap-1">
-                  {['equals', 'before', 'after', 'between'].map(type => (
-                    <Button
-                      key={type}
-                      variant={filterType === type ? 'default' : 'outline'}
-                      size="sm"
-                      onClick={() => setFilterType(type as DateFilterType)}
-                      className="text-xs capitalize"
-                    >
-                      {type}
-                    </Button>
-                  ))}
-                </div>
-
-                {filterType === 'between' ? (
-                  <div className="space-y-2">
-                    <div>
-                      <label className="text-xs font-medium text-gray-600">From:</label>
-                      <input
-                        type="date"
-                        value={startDate}
-                        onChange={(e) => setStartDate(e.target.value)}
-                        className="w-full px-2 py-1 text-xs border rounded"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-xs font-medium text-gray-600">To:</label>
-                      <input
-                        type="date"
-                        value={endDate}
-                        onChange={(e) => setEndDate(e.target.value)}
-                        className="w-full px-2 py-1 text-xs border rounded"
-                      />
-                    </div>
-                  </div>
-                ) : (
-                  <div>
-                    <label className="text-xs font-medium text-gray-600">Date:</label>
-                    <input
-                      type="date"
-                      value={customDate}
-                      onChange={(e) => setCustomDate(e.target.value)}
-                      className="w-full px-2 py-1 text-xs border rounded"
-                    />
-                  </div>
-                )}
-
-                <Button size="sm" onClick={handleAddFilter} className="w-full">
-                  Add Custom Filter
-                </Button>
+              <div>
+                <label className="text-xs font-medium text-gray-600">Date:</label>
+                <input
+                  type="date"
+                  value={customDate}
+                  onChange={(e) => setCustomDate(e.target.value)}
+                  className="w-full px-2 py-1 text-xs border rounded"
+                />
               </div>
             )}
+
+            <Button size="sm" onClick={handleAddFilter} className="w-full">
+              Add Custom Filter
+            </Button>
           </div>
+        )}
+      </div>
 
-          {/* Active Filters */}
-          {selectedFilters.length > 0 && (
-            <div className="space-y-2 mb-4">
-              <label className="text-xs font-medium text-gray-600">Active Filters:</label>
-              <div className="space-y-1 max-h-24 overflow-y-auto">
-                {selectedFilters.map((filter, index) => (
-                  <div key={index} className="flex items-center justify-between bg-blue-50 px-2 py-1 rounded text-xs">
-                    <span className="text-blue-700">{getFilterDescription(filter)}</span>
-                    <button
-                      onClick={() => removeFilter(index)}
-                      className="text-blue-400 hover:text-blue-600"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </div>
-                ))}
+      {/* Active Filters */}
+      {selectedFilters.length > 0 && (
+        <div className="space-y-2 mb-4">
+          <label className="text-xs font-medium text-gray-600">Active Filters:</label>
+          <div className="space-y-1 max-h-24 overflow-y-auto">
+            {selectedFilters.map((filter, index) => (
+              <div key={index} className="flex items-center justify-between bg-blue-50 px-2 py-1 rounded text-xs">
+                <span className="text-blue-700">{getFilterDescription(filter)}</span>
+                <button
+                  onClick={() => removeFilter(index)}
+                  className="text-blue-400 hover:text-blue-600"
+                >
+                  <X className="h-3 w-3" />
+                </button>
               </div>
-            </div>
-          )}
-
-          {/* Action Buttons */}
-          <div className="flex space-x-2 pt-2 border-t">
-            <Button size="sm" onClick={applyFilters} className="flex-1">
-              Apply Filters
-            </Button>
-            <Button size="sm" variant="outline" onClick={clearAllFilters} className="flex-1">
-              Cancel
-            </Button>
+            ))}
           </div>
         </div>
+      )}
+
+      {/* Action Buttons */}
+      <div className="flex space-x-2 pt-2 border-t">
+        <Button size="sm" onClick={applyFilters} className="flex-1">
+          Apply Filters
+        </Button>
+        <Button size="sm" variant="outline" onClick={clearAllFilters} className="flex-1">
+          Cancel
+        </Button>
+      </div>
+    </div>
   )
 }
 
@@ -613,14 +628,16 @@ const extractCellValue = (cell: ReactNode, dataType: DataType): string | number 
       case 'number':
         return parseFloat(String(content)) || 0
       case 'date':
-        return new Date(String(content))
+        const date = new Date(String(content))
+        return isNaN(date.getTime()) ? new Date() : date
       case 'boolean':
-        return String(content) === 'true' || String(content) === '1'
+        if (typeof content === 'boolean') return content
+        return String(content).toLowerCase() === 'true' || String(content) === '1'
       default:
         return String(content)
     }
   }
-  
+
   if (React.isValidElement(cell) && cell.props.children) {
     const content = cell.props.children
     if (typeof content === 'string' || typeof content === 'number') {
@@ -628,9 +645,11 @@ const extractCellValue = (cell: ReactNode, dataType: DataType): string | number 
         case 'number':
           return parseFloat(String(content)) || 0
         case 'date':
-          return new Date(String(content))
+          const date = new Date(String(content))
+          return isNaN(date.getTime()) ? new Date() : date
         case 'boolean':
-          return String(content) === 'true' || String(content) === '1'
+          if (typeof content === 'boolean') return content
+          return String(content).toLowerCase() === 'true' || String(content) === '1'
         default:
           return String(content)
       }
@@ -682,10 +701,10 @@ export function ExcelTable({ children, className }: ExcelTableProps) {
 
       processedRows = processedRows.filter(row => {
         if (!React.isValidElement(row)) return true
-        
+
         const cells = React.Children.toArray(row.props.children)
         const cellValue = extractCellValue(cells[parseInt(columnIndex)], columnTypes[columnIndex] || 'string')
-        
+
         return filterValues.includes(String(cellValue))
       })
     })
@@ -696,14 +715,18 @@ export function ExcelTable({ children, className }: ExcelTableProps) {
 
       processedRows = processedRows.filter(row => {
         if (!React.isValidElement(row)) return true
-        
+
         const cells = React.Children.toArray(row.props.children)
         const cellValue = extractCellValue(cells[parseInt(columnIndex)], columnTypes[columnIndex] || 'string')
-        
-        if (columnTypes[columnIndex] === 'date' && cellValue instanceof Date) {
-          return filterList.some(filter => matchesDateFilter(cellValue, filter))
+
+        if (columnTypes[columnIndex] === 'date') {
+          if (cellValue instanceof Date && !isNaN(cellValue.getTime())) {
+            return filterList.some(filter => matchesDateFilter(cellValue, filter))
+          }
+          // If it's a date column but not a valid date, exclude it from results
+          return false
         }
-        
+
         return true
       })
     })
@@ -712,20 +735,20 @@ export function ExcelTable({ children, className }: ExcelTableProps) {
     const sortEntries = Object.entries(sorts).filter(([, direction]) => direction !== null)
     if (sortEntries.length > 0) {
       const [columnIndex, direction] = sortEntries[sortEntries.length - 1]
-      
+
       processedRows.sort((a, b) => {
         if (!React.isValidElement(a) || !React.isValidElement(b)) return 0
-        
+
         const aCells = React.Children.toArray(a.props.children)
         const bCells = React.Children.toArray(b.props.children)
-        
+
         const aValue = extractCellValue(aCells[parseInt(columnIndex)], columnTypes[columnIndex] || 'string')
         const bValue = extractCellValue(bCells[parseInt(columnIndex)], columnTypes[columnIndex] || 'string')
-        
+
         let comparison = 0
         if (aValue < bValue) comparison = -1
         else if (aValue > bValue) comparison = 1
-        
+
         return direction === 'desc' ? -comparison : comparison
       })
     }
@@ -748,11 +771,11 @@ export function ExcelTable({ children, className }: ExcelTableProps) {
     headerRefs,
     setHeaderRef
   }), [
-    filters, 
+    filters,
     dateFilters,
-    sorts, 
-    rawRows, 
-    columnTypes, 
+    sorts,
+    rawRows,
+    columnTypes,
     headerRefs,
     getFilteredAndSortedData,
     setFilter,
@@ -797,12 +820,12 @@ interface ExcelTableHeadProps {
   className?: string
 }
 
-export function ExcelTableHead({ 
-  children, 
-  filterable = false, 
-  sortable = false, 
+export function ExcelTableHead({
+  children,
+  filterable = false,
+  sortable = false,
   dataType = 'string',
-  className 
+  className
 }: ExcelTableHeadProps) {
   const context = React.useContext(TableContext)
   const [columnIndex, setColumnIndex] = React.useState<string>('')
@@ -814,7 +837,7 @@ export function ExcelTableHead({
   // Find column index dynamically
   React.useEffect(() => {
     if (!context || !headerElement) return
-    
+
     const headerRow = headerElement.parentElement
     if (headerRow) {
       const headers = Array.from(headerRow.children) as HTMLElement[]
@@ -831,14 +854,14 @@ export function ExcelTableHead({
   const previousRowsLength = React.useRef(0)
   React.useEffect(() => {
     if (!context || !columnIndex || !context.rawRows) return
-    
+
     // Only update if the number of rows changed to avoid unnecessary recalculations
     const currentLength = context.rawRows.length
-    
+
     if (currentLength === previousRowsLength.current && previousRowsLength.current > 0) return
-    
+
     previousRowsLength.current = currentLength
-    
+
     const values = new Set<string>()
     context.rawRows.forEach(row => {
       if (React.isValidElement(row)) {
@@ -860,7 +883,7 @@ export function ExcelTableHead({
   React.useEffect(() => {
     if (!context || !columnIndex) return
     const contextFilters = context.filters[columnIndex] || []
-    
+
     // Only update if the filters actually changed
     if (JSON.stringify(contextFilters) !== JSON.stringify(previousFilters.current)) {
       previousFilters.current = contextFilters
@@ -921,13 +944,13 @@ export function ExcelTableHead({
   }, [columnIndex, filterable, dataType, uniqueValues.length, hasActiveFilter, hasActiveDateFilter])
 
   return (
-    <TableHead 
+    <TableHead
       ref={setHeaderElement}
       className={className}
     >
       <div className="flex items-center space-x-2">
         <span>{children}</span>
-        
+
         {(filterable || sortable) && (
           <div className="flex items-center space-x-1">
             {sortable && (
@@ -946,7 +969,7 @@ export function ExcelTableHead({
                 )}
               </Button>
             )}
-            
+
             {(filterable && dataType === 'date') ? (
               <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
                 <PopoverTrigger asChild>
@@ -1000,7 +1023,7 @@ export function ExcelTableHead({
                         </Button>
                       )}
                     </div>
-                    
+
                     <div className="space-y-2 max-h-64 overflow-y-auto">
                       {uniqueValues.map(value => (
                         <div key={value} className="flex items-center space-x-2">
@@ -1024,7 +1047,7 @@ export function ExcelTableHead({
                         </div>
                       ))}
                     </div>
-                    
+
                     <div className="flex space-x-2 mt-3 pt-3 border-t">
                       <Button
                         size="sm"
@@ -1061,20 +1084,20 @@ interface ExcelTableBodyProps {
 
 export function ExcelTableBody({ children, className }: ExcelTableBodyProps) {
   const context = React.useContext(TableContext)
-  
+
   // Use useMemo to memoize the rows array to prevent unnecessary updates
   const rows = React.useMemo(() => React.Children.toArray(children), [children])
-  
+
   // Use a ref to track if we've already set the rows to prevent infinite loops
   const rowsSetRef = React.useRef(false)
   const lastRowsRef = React.useRef<ReactNode[]>([])
-  
+
   React.useEffect(() => {
     if (context) {
       // Only update if the count of rows actually changed - avoid JSON.stringify on React elements
       const currentRowCount = rows.length
       const currentChildrenCount = React.Children.count(children)
-      
+
       if (currentRowCount !== lastRowsRef.current.length || !rowsSetRef.current) {
         lastRowsRef.current = rows
         rowsSetRef.current = true
@@ -1085,8 +1108,8 @@ export function ExcelTableBody({ children, className }: ExcelTableBodyProps) {
 
   if (!context) return null
 
-  const processedRows = React.useMemo(() => 
-    context.getFilteredAndSortedData(), 
+  const processedRows = React.useMemo(() =>
+    context.getFilteredAndSortedData(),
     [context]
   )
 

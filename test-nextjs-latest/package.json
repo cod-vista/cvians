@@ -9,7 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@codvista/cvians-core": "^2.1.2",
+    "@codvista/cvians-core": "^2.1.3",
     "next": "16.0.0",
     "react": "19.2.0",
     "react-dom": "19.2.0"
