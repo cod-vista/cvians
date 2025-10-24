@@ -844,7 +844,12 @@ export function ExcelTableHead({
       if (React.isValidElement(row)) {
         const cells = React.Children.toArray(row.props.children)
         const cellValue = extractCellValue(cells[parseInt(columnIndex)], dataType)
-        values.add(String(cellValue))
+        if (dataType === 'date' && cellValue instanceof Date && !isNaN(cellValue.getTime())) {
+          // normalize date values to YYYY-MM-DD for consistent parsing later
+          values.add(formatDate(cellValue))
+        } else {
+          values.add(String(cellValue))
+        }
       }
     })
     setUniqueValues(Array.from(values).sort())
@@ -895,6 +900,26 @@ export function ExcelTableHead({
   const hasActiveFilter = (context?.filters[columnIndex]?.length ?? 0) > 0
   const hasActiveDateFilter = (context?.dateFilters[columnIndex]?.length ?? 0) > 0
 
+  // Debugging: log header metadata when it changes (only in non-production)
+  React.useEffect(() => {
+    try {
+      if (typeof window !== 'undefined') {
+        // Log a compact summary to help diagnose why date columns aren't detected
+        console.log('🐛 ExcelTableHead DEBUG:', {
+          columnIndex,
+          filterable,
+          dataType,
+          isDateColumn: dataType === 'date',
+          uniqueValuesCount: uniqueValues.length,
+          hasActiveFilter,
+          hasActiveDateFilter
+        })
+      }
+    } catch (e) {
+      // swallow logging errors
+    }
+  }, [columnIndex, filterable, dataType, uniqueValues.length, hasActiveFilter, hasActiveDateFilter])
+
   return (
     <TableHead 
       ref={setHeaderElement}
@@ -922,7 +947,7 @@ export function ExcelTableHead({
               </Button>
             )}
             
-            {filterable && dataType === 'date' ? (
+            {(filterable && dataType === 'date') ? (
               <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
                 <PopoverTrigger asChild>
                   <Button

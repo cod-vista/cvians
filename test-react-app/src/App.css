@@ -1,0 +1,54 @@
+/* Basic styles for Excel Table testing */
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 10px 0;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+/* Filter button styles */
+button {
+  margin: 2px;
+  padding: 4px 8px;
+  border: 1px solid #ccc;
+  background: white;
+  cursor: pointer;
+  border-radius: 3px;
+}
+
+button:hover {
+  background-color: #f0f0f0;
+}
+
+/* Popover styles */
+div[role="dialog"] {
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  z-index: 1000;
+}
+
+/* Test status styles */
+.test-status {
+  margin: 20px 0;
+  padding: 15px;
+  border-radius: 5px;
+  background-color: #e8f5e8;
+  border: 1px solid #4caf50;
+}
+
+.test-error {
+  background-color: #ffebee;
+  border-color: #f44336;
+}
