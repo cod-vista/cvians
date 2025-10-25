@@ -3,6 +3,11 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "type-check": "tsc --noEmit",
+    "lint": "echo 'No linting configured for examples'"
+  },
   "dependencies": {
     "@codvista/cvians-excel-table": "workspace:*",
     "react": "^18.3.1",

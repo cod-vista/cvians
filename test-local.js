@@ -3,7 +3,7 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 
 // Use local build
-const { ExcelTable } = require('../packages/core/dist/index.js');
+const { ExcelTable } = require('../packages/excel-table/dist/index.js');
 
 const testData = [
   { name: 'John Doe', age: 30, city: 'New York', active: true },

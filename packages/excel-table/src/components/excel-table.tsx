@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import type { ReactNode } from "react"
-import { ChevronDown, ChevronUp, Filter, X, Calendar, Clock, CalendarDays, ChevronRight } from 'lucide-react'
+import { ChevronDown, ChevronUp, Filter, X, Calendar, Clock, CalendarDays } from 'lucide-react'
 import { Button } from './ui/button'
 import { Checkbox } from './ui/checkbox'
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
@@ -30,42 +30,50 @@ const getRelativeDate = (type: RelativeDateType): { start: Date, end: Date } => 
   switch (type) {
     case 'today':
       return { start: today, end: today }
-    case 'yesterday':
+    case 'yesterday': {
       const yesterday = new Date(today)
       yesterday.setDate(yesterday.getDate() - 1)
       return { start: yesterday, end: yesterday }
-    case 'tomorrow':
+    }
+    case 'tomorrow': {
       const tomorrow = new Date(today)
       tomorrow.setDate(tomorrow.getDate() + 1)
       return { start: tomorrow, end: tomorrow }
-    case 'thisWeek':
+    }
+    case 'thisWeek': {
       const startOfWeek = new Date(today)
       startOfWeek.setDate(today.getDate() - today.getDay())
       const endOfWeek = new Date(startOfWeek)
       endOfWeek.setDate(startOfWeek.getDate() + 6)
       return { start: startOfWeek, end: endOfWeek }
-    case 'lastWeek':
+    }
+    case 'lastWeek': {
       const lastWeekStart = new Date(today)
       lastWeekStart.setDate(today.getDate() - today.getDay() - 7)
       const lastWeekEnd = new Date(lastWeekStart)
       lastWeekEnd.setDate(lastWeekStart.getDate() + 6)
       return { start: lastWeekStart, end: lastWeekEnd }
-    case 'thisMonth':
+    }
+    case 'thisMonth': {
       const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1)
       const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0)
       return { start: startOfMonth, end: endOfMonth }
-    case 'lastMonth':
+    }
+    case 'lastMonth': {
       const lastMonthStart = new Date(today.getFullYear(), today.getMonth() - 1, 1)
       const lastMonthEnd = new Date(today.getFullYear(), today.getMonth(), 0)
       return { start: lastMonthStart, end: lastMonthEnd }
-    case 'thisYear':
+    }
+    case 'thisYear': {
       const startOfYear = new Date(today.getFullYear(), 0, 1)
       const endOfYear = new Date(today.getFullYear(), 11, 31)
       return { start: startOfYear, end: endOfYear }
-    case 'lastYear':
+    }
+    case 'lastYear': {
       const lastYearStart = new Date(today.getFullYear() - 1, 0, 1)
       const lastYearEnd = new Date(today.getFullYear() - 1, 11, 31)
       return { start: lastYearStart, end: lastYearEnd }
+    }
     default:
       return { start: today, end: today }
   }
@@ -73,31 +81,32 @@ const getRelativeDate = (type: RelativeDateType): { start: Date, end: Date } => 
 
 const matchesDateFilter = (dateValue: Date, filter: DateFilter): boolean => {
   switch (filter.type) {
-    case 'equals':
+    case 'equals': {
       if (!filter.value) return false
       const targetDate = parseDate(filter.value)
       return dateValue.toDateString() === targetDate.toDateString()
-
-    case 'before':
+    }
+    case 'before': {
       if (!filter.value) return false
       const beforeDate = parseDate(filter.value)
       return dateValue < beforeDate
-
-    case 'after':
+    }
+    case 'after': {
       if (!filter.value) return false
       const afterDate = parseDate(filter.value)
       return dateValue > afterDate
-
-    case 'between':
+    }
+    case 'between': {
       if (!filter.startDate || !filter.endDate) return false
       const startDate = parseDate(filter.startDate)
       const endDate = parseDate(filter.endDate)
       return dateValue >= startDate && dateValue <= endDate
-
-    case 'relative':
+    }
+    case 'relative': {
       if (!filter.relative) return false
       const { start, end } = getRelativeDate(filter.relative)
       return dateValue >= start && dateValue <= end
+    }
 
     default:
       return false
@@ -147,7 +156,7 @@ function DateFilterPopover({ columnIndex, uniqueValues }: DateFilterPopoverProps
   React.useEffect(() => {
     setSelectedFilters(currentFilters)
   }, [currentFilters])
-  const [selectedDates, setSelectedDates] = React.useState<Set<string>>(new Set())
+  const [_selectedDates, _setSelectedDates] = React.useState<Set<string>>(new Set())
   const [dateHierarchy, setDateHierarchy] = React.useState<DateHierarchy[]>([])
 
   const monthNames = [
@@ -376,9 +385,10 @@ function DateFilterPopover({ columnIndex, uniqueValues }: DateFilterPopoverProps
         return `After: ${filter.value}`
       case 'between':
         return `Between: ${filter.startDate} - ${filter.endDate}`
-      case 'relative':
+      case 'relative': {
         const option = relativeOptions.find(opt => opt.value === filter.relative)
         return option?.label || filter.relative || ''
+      }
       default:
         return ''
     }
@@ -440,15 +450,17 @@ function DateFilterPopover({ columnIndex, uniqueValues }: DateFilterPopoverProps
           <div className="space-y-2">
             <label className="text-xs font-medium text-gray-600">Select Dates:</label>
             <div className="max-h-64 overflow-y-auto">
+              {/* @ts-ignore - Radix UI accordion type issue */}
               <Accordion type="multiple" className="w-full">
                 {dateHierarchy.map((year: DateHierarchy, yearIndex: number) => (
                   <AccordionItem key={year.year} value={`year-${year.year}`}>
                     <div className="flex items-center space-x-2 px-3">
                       <Checkbox
                         checked={year.selected}
-                        onCheckedChange={(checked) => handleYearToggle(yearIndex, checked)}
+                        onCheckedChange={(checked: boolean) => handleYearToggle(yearIndex, checked)}
                         className="w-4 h-4"
                       />
+                      {/* @ts-ignore - Radix UI accordion type issue */}
                       <AccordionTrigger className="flex-1 text-sm font-medium py-2">
                         <div className="flex items-center space-x-2">
                           <Calendar className="h-4 w-4" />
@@ -456,17 +468,20 @@ function DateFilterPopover({ columnIndex, uniqueValues }: DateFilterPopoverProps
                         </div>
                       </AccordionTrigger>
                     </div>
+                    {/* @ts-ignore - Radix UI accordion type issue */}
                     <AccordionContent>
                       <div className="pl-6 space-y-1">
+                        {/* @ts-ignore - Radix UI accordion type issue */}
                         <Accordion type="multiple" className="w-full">
                           {year.months.map((month: DateHierarchy['months'][0], monthIndex: number) => (
                             <AccordionItem key={month.month} value={`month-${year.year}-${month.month}`}>
                               <div className="flex items-center space-x-2 px-3">
                                 <Checkbox
                                   checked={month.selected}
-                                  onCheckedChange={(checked) => handleMonthToggle(yearIndex, monthIndex, checked)}
+                                  onCheckedChange={(checked: boolean) => handleMonthToggle(yearIndex, monthIndex, checked)}
                                   className="w-4 h-4"
                                 />
+                                {/* @ts-ignore - Radix UI accordion type issue */}
                                 <AccordionTrigger className="flex-1 text-sm py-2">
                                   <div className="flex items-center space-x-2">
                                     <CalendarDays className="h-4 w-4" />
@@ -474,6 +489,7 @@ function DateFilterPopover({ columnIndex, uniqueValues }: DateFilterPopoverProps
                                   </div>
                                 </AccordionTrigger>
                               </div>
+                              {/* @ts-ignore - Radix UI accordion type issue */}
                               <AccordionContent>
                                 <div className="pl-6 space-y-1 max-h-32 overflow-y-auto">
                                   {month.days.map((day: DateHierarchy['months'][0]['days'][0], dayIndex: number) => (
@@ -483,7 +499,7 @@ function DateFilterPopover({ columnIndex, uniqueValues }: DateFilterPopoverProps
                                     >
                                       <Checkbox
                                         checked={day.selected}
-                                        onCheckedChange={(checked) => handleDayToggle(yearIndex, monthIndex, dayIndex, checked)}
+                                        onCheckedChange={(checked: boolean) => handleDayToggle(yearIndex, monthIndex, dayIndex, checked)}
                                         className="w-4 h-4"
                                       />
                                       <span className="text-gray-600">{day.day} - {new Date(day.fullDate).toLocaleDateString()}</span>
@@ -619,16 +635,18 @@ const extractCellValue = (cell: ReactNode, dataType: DataType): string | number 
     switch (dataType) {
       case 'number':
         return parseFloat(String(content)) || 0
-      case 'date':
+      case 'date': {
         const date = new Date(String(content))
         return isNaN(date.getTime()) ? new Date() : date
-      case 'boolean':
+      }
+      case 'boolean': {
         // For filtering, treat booleans as strings
         if (typeof content === 'boolean') return String(content)
         const strContent = String(content).toLowerCase()
         if (strContent === 'true' || strContent === '1') return 'true'
         if (strContent === 'false' || strContent === '0') return 'false'
         return String(Boolean(content))
+      }
       default:
         return String(content)
     }
@@ -640,16 +658,18 @@ const extractCellValue = (cell: ReactNode, dataType: DataType): string | number 
       switch (dataType) {
         case 'number':
           return parseFloat(String(content)) || 0
-        case 'date':
+        case 'date': {
           const date = new Date(String(content))
           return isNaN(date.getTime()) ? new Date() : date
-        case 'boolean':
+        }
+        case 'boolean': {
           // For filtering, treat booleans as strings
           if (typeof content === 'boolean') return String(content)
           const strContent = String(content).toLowerCase()
           if (strContent === 'true' || strContent === '1') return 'true'
           if (strContent === 'false' || strContent === '0') return 'false'
           return String(Boolean(content))
+        }
         default:
           return String(content)
       }
@@ -937,13 +957,13 @@ export function ExcelTableHead({
     context.setSort(columnIndex, newDirection)
   }
 
-  const handleDateFilter = (filters: DateFilter[]) => {
+  const _handleDateFilter = (filters: DateFilter[]) => {
     if (!context || !columnIndex) return
     context.setDateFilter(columnIndex, filters)
     setIsPopoverOpen(false)
   }
 
-  const clearDateFilter = () => {
+  const _clearDateFilter = () => {
     if (!context || !columnIndex) return
     context.setDateFilter(columnIndex, [])
   }
@@ -966,21 +986,17 @@ export function ExcelTableHead({
 
   // Debugging: log header metadata when it changes (only in non-production)
   React.useEffect(() => {
-    try {
-      if (typeof window !== 'undefined') {
-        // Log a compact summary to help diagnose why date columns aren't detected
-        console.log('🐛 ExcelTableHead DEBUG:', {
-          columnIndex,
-          filterable,
-          dataType,
-          isDateColumn: dataType === 'date',
-          uniqueValuesCount: uniqueValues.length,
-          hasActiveFilter,
-          hasActiveDateFilter
-        })
-      }
-    } catch (e) {
-      // swallow logging errors
+    if (typeof window !== 'undefined') {
+      // Log a compact summary to help diagnose why date columns aren't detected
+      console.log('🐛 ExcelTableHead DEBUG:', {
+        columnIndex,
+        filterable,
+        dataType,
+        isDateColumn: dataType === 'date',
+        uniqueValuesCount: uniqueValues.length,
+        hasActiveFilter,
+        hasActiveDateFilter
+      })
     }
   }, [columnIndex, filterable, dataType, uniqueValues.length, hasActiveFilter, hasActiveDateFilter])
 
@@ -1013,6 +1029,7 @@ export function ExcelTableHead({
 
             {(filterable && dataType === 'date') ? (
               <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+                {/* @ts-ignore - Radix UI popover type issue */}
                 <PopoverTrigger asChild>
                   <Button
                     variant="ghost"
@@ -1034,6 +1051,7 @@ export function ExcelTableHead({
               </Popover>
             ) : filterable ? (
               <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+                {/* @ts-ignore - Radix UI popover type issue */}
                 <PopoverTrigger asChild>
                   <Button
                     variant="ghost"
@@ -1069,7 +1087,7 @@ export function ExcelTableHead({
                           <Checkbox
                             id={`filter-${value}`}
                             checked={selectedFilters.includes(value)}
-                            onCheckedChange={(checked) => {
+                            onCheckedChange={(checked: boolean) => {
                               if (checked) {
                                 setSelectedFilters(prev => [...prev, value])
                               } else {
@@ -1138,7 +1156,7 @@ export function ExcelTableBody({ children, className }: ExcelTableBodyProps) {
     if (context) {
       // Only update if the count of rows actually changed - avoid JSON.stringify on React elements
       const currentRowCount = rows.length
-      const currentChildrenCount = React.Children.count(children)
+      const _currentChildrenCount = React.Children.count(children)
 
       if (currentRowCount !== lastRowsRef.current.length || !rowsSetRef.current) {
         lastRowsRef.current = rows

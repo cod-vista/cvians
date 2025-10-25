@@ -2,7 +2,7 @@
 // This demonstrates how to use the Cvians Excel Table in a Next.js app
 // with proper server-side rendering support
 
-import { ExcelTable, ExcelTableHeader, ExcelTableHead, ExcelTableBody, ExcelTableRow, ExcelTableCell } from '@codvista/cvians-core'
+import { ExcelTable, ExcelTableHeader, ExcelTableHead, ExcelTableBody, ExcelTableRow, ExcelTableCell } from '@codvista/cvians-excel-table'
 
 // Sample data
 const products = [

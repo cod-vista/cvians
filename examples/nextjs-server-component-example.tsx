@@ -1,7 +1,7 @@
 // Complete Next.js App Router Example
 // This component works WITHOUT requiring "use client" directive!
 
-import { ExcelTable, ExcelTableHeader, ExcelTableHead, ExcelTableBody, ExcelTableRow, ExcelTableCell } from '@codvista/cvians-core'
+import { ExcelTable, ExcelTableHeader, ExcelTableHead, ExcelTableBody, ExcelTableRow, ExcelTableCell } from '@codvista/cvians-excel-table'
 
 const productsData = [
   { id: 1, name: 'MacBook Pro', price: 2499, category: 'Electronics', inStock: true },

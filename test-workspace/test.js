@@ -30,7 +30,7 @@ try {
   console.log('\nTesting package import...');
   
   // Import the local built package
-  const packagePath = '../packages/core/dist/index.js';
+  const packagePath = '../packages/excel-table/dist/index.js';
   const { ExcelTable } = await import(packagePath);
   
   console.log('✅ Package imported successfully');

@@ -1,4 +1,4 @@
-# @codvista/cvians-core
+# @codvista/cvians-excel-table
 
 Core components for the Cvians UI library, featuring Excel-like tables with advanced filtering and sorting capabilities.
 
@@ -16,7 +16,7 @@ Core components for the Cvians UI library, featuring Excel-like tables with adva
 ## 🚀 Installation
 
 ```bash
-npm install @codvista/cvians-core
+npm install @codvista/cvians-excel-table
 ```
 
 Or using the CLI (recommended):
@@ -42,7 +42,7 @@ import {
   ExcelTableBody,
   ExcelTableRow,
   ExcelTableCell,
-} from "@codvista/cvians-core"
+} from "@codvista/cvians-excel-table"
 
 function MyTable() {
   const data = [

@@ -4,7 +4,7 @@ This is a modern React TypeScript component library focused on creating Excel-li
 
 ## Project Structure
 
-- `packages/core` - Core Excel Table component
+- `packages/excel-table` - Excel Table component
 - `packages/cli` - CLI tool for component installation (similar to shadcn-ui)
 - `apps/docs` - Documentation and examples  
 - `apps/playground` - Development playground

@@ -6,7 +6,7 @@ import {
   ExcelTableBody,
   ExcelTableRow,
   ExcelTableCell,
-} from '../packages/core/src/index'
+} from '@codvista/cvians-excel-table'
 
 // Sample data for demonstration
 const vehicles = [

@@ -15,6 +15,7 @@ const Checkbox = React.forwardRef<
     )}
     {...props}
   >
+    {/* @ts-ignore - Radix UI checkbox type issue */}
     <CheckboxPrimitive.Indicator
       className={cn("grid place-content-center text-current")}
     >
