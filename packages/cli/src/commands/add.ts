@@ -19,14 +19,14 @@ const COMPONENTS = {
 
 async function getExcelTableContent(): Promise<string> {
   // Dynamic content generation - reads from the actual component file
-  const componentPath = path.resolve(process.cwd(), '../../core/src/components/excel-table.tsx')
+  const componentPath = path.resolve(process.cwd(), '../../excel-table/src/components/excel-table.tsx')
   try {
     const content = await fs.readFile(componentPath, 'utf-8')
     return content
   } catch {
     // Fallback content if file not found
-    return `// Excel Table Component - Install @codvista/cvians-core for full functionality
-export * from '@codvista/cvians-core'`
+    return `// Excel Table Component - Install @codvista/cvians-excel-table for full functionality
+export * from '@codvista/cvians-excel-table'`
   }
 }
 

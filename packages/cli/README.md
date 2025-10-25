@@ -134,7 +134,7 @@ The `components.json` file controls:
 
 ## 📦 Core Package
 
-This CLI installs components from [@codvista/cvians-core](https://www.npmjs.com/package/@codvista/cvians-core).
+This CLI installs components from [@codvista/cvians-excel-table](https://www.npmjs.com/package/@codvista/cvians-excel-table) and future Cvians component packages.
 
 ## 🤝 Contributing
 
@@ -146,7 +146,7 @@ MIT License
 
 ## 🔗 Links
 
-- [Core Components](https://www.npmjs.com/package/@codvista/cvians-core)
+- [Excel Table Components](https://www.npmjs.com/package/@codvista/cvians-excel-table)
 - [Documentation](../../DOCUMENTATION.md)
 - [GitHub](https://github.com/cod-vista/cvians)
 - [Issues](https://github.com/cod-vista/cvians/issues)
