@@ -1,5 +1,11 @@
 # @codvista/cvians-excel-table
 
+## 1.2.0
+
+### Minor Changes
+
+- 05d107a: Added search bar in the filter popover and fixed the height to max-[300] of the popover with appropriate overflow
+
 ## 2.0.0
 
 ### Major Changes
