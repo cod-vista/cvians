@@ -37,7 +37,7 @@ import {
   ExcelTableBody,
   ExcelTableRow,
   ExcelTableCell,
-} from '@codvista/cvians-core'
+} from '@codvista/cvians-excel-table'
 
 // Your component implementation
 ```
@@ -48,7 +48,7 @@ To use these components in your project:
 
 ```bash
 # Install the core package
-npm install @codvista/cvians-core
+npm install @codvista/cvians-excel-table
 
 # Or use the CLI tool
 npm install -g @codvista/cvians-cli
@@ -59,6 +59,6 @@ cvians add excel-table
 ## Notes
 
 - The examples use relative imports for development purposes
-- In a real project, you would import from the published npm package: `@codvista/cvians-core`
+- In a real project, you would import from the published npm package: `@codvista/cvians-excel-table`
 - All examples are fully typed with TypeScript
 - Components work with both React and Preact

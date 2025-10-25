@@ -1,4 +1,4 @@
-# @codvista/cvians-core
+# @codvista/cvians-excel-table
 
 ## 2.0.0
 

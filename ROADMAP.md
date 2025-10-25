@@ -6,7 +6,7 @@ Cvians is designed to become a comprehensive component library ecosystem with mu
 
 ## 📦 Current Packages
 
-### ✅ Core Package (`@codvista/cvians-core`)
+### ✅ Core Package (`@codvista/cvians-excel-table`)
 - Excel-like table components with filtering and sorting
 - Framework agnostic (React/Preact compatibility)
 - TypeScript-first development

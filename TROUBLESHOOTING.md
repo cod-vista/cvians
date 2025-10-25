@@ -99,8 +99,8 @@ pnpm changeset publish
    - Add `NPM_TOKEN` secret with automation token from npmjs.com
 
 2. **Package Name Conflicts**:
-   - Check if `@codvista/cvians-core` and `@codvista/cvians-cli` are available
-   - Use alternative: `@cod-vista/cvians-core`
+   - Check if `@codvista/cvians-excel-table` and `@codvista/cvians-cli` are available
+   - Use alternative: `@cod-vista/cvians-excel-table`
 
 3. **Version Issues**:
    - Ensure changesets are created properly

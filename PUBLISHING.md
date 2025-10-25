@@ -14,11 +14,11 @@ This guide will help you publish the Cvians UI component library to npm so every
 ## 🏷️ Package Naming
 
 The packages will be published under the `@cvians` scope:
-- `@codvista/cvians-core` - Core components
+- `@codvista/cvians-excel-table` - Core components
 - `@codvista/cvians-cli` - CLI installation tool
 
 If `@cvians` is unavailable, consider:
-- `@your-username/cvians-core`
+- `@your-username/cvians-excel-table`
 - `@your-org/cvians`
 - `cvians-ui`
 
@@ -27,7 +27,7 @@ If `@cvians` is unavailable, consider:
 ### 1. Verify Package Names
 
 The package names are already set correctly:
-- `@codvista/cvians-core`
+- `@codvista/cvians-excel-table`
 - `@codvista/cvians-cli`
 - `@cvians/root` (private)
 
@@ -119,7 +119,7 @@ In your GitHub repository settings, add:
 Your final package structure:
 
 ```
-@codvista/cvians-core/
+@codvista/cvians-excel-table/
 ├── dist/
 │   ├── index.js      # ESM build
 │   ├── index.cjs     # CommonJS build
@@ -141,7 +141,7 @@ After publishing, users can install with:
 
 ```bash
 # Core components
-npm install @codvista/cvians-core
+npm install @codvista/cvians-excel-table
 
 # CLI tool (global)
 npm install -g @codvista/cvians-cli

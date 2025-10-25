@@ -1,5 +1,5 @@
 import React from 'react';
-import { ExcelTable, ExcelTableHeader, ExcelTableHead, ExcelTableBody, ExcelTableRow, ExcelTableCell } from '@codvista/cvians-core';
+import { ExcelTable, ExcelTableHeader, ExcelTableHead, ExcelTableBody, ExcelTableRow, ExcelTableCell } from '@codvista/cvians-excel-table';
 
 // Simulate Next.js environment
 console.log('Testing in Next.js-like environment...');

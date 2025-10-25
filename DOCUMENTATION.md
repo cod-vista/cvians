@@ -40,7 +40,7 @@ Welcome to the comprehensive documentation for the Cvians UI component library.
 npm install -g @codvista/cvians-cli
 
 # Install core components
-npm install @codvista/cvians-core
+npm install @codvista/cvians-excel-table
 ```
 
 ### Usage
@@ -54,7 +54,7 @@ cvians add excel-table
 
 ```tsx
 // Use in your React/Preact app
-import { ExcelTable } from '@codvista/cvians-core';
+import { ExcelTable } from '@codvista/cvians-excel-table';
 
 const data = [
   { name: 'John', age: 30, city: 'New York' },
@@ -69,7 +69,7 @@ function App() {
 ## 🔗 External Resources
 
 - **NPM Packages**: 
-  - [@codvista/cvians-core](https://www.npmjs.com/package/@codvista/cvians-core)
+  - [@codvista/cvians-excel-table](https://www.npmjs.com/package/@codvista/cvians-excel-table)
   - [@codvista/cvians-cli](https://www.npmjs.com/package/@codvista/cvians-cli)
 - **GitHub Repository**: [cod-vista/cvians](https://github.com/cod-vista/cvians)
 - **Issues & Support**: [GitHub Issues](https://github.com/cod-vista/cvians/issues)

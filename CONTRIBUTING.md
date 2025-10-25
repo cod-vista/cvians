@@ -67,7 +67,7 @@ pnpm test
 pnpm test --watch
 
 # Run tests for specific package
-pnpm --filter @codvista/cvians-core test
+pnpm --filter @codvista/cvians-excel-table test
 ```
 
 ## 📝 Code Style

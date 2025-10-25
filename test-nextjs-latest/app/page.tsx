@@ -7,7 +7,7 @@ import {
   ExcelTableHead,
   ExcelTableHeader,
   ExcelTableRow
-} from "@codvista/cvians-core"
+} from "@codvista/cvians-excel-table"
 
 const sampleData = [
   {

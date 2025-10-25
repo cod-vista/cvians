@@ -10,7 +10,7 @@ console.log('window is undefined:', typeof window === 'undefined');
 async function testSSR() {
   try {
     // This should now work without createContext errors
-    const module = await import('@codvista/cvians-core');
+    const module = await import('@codvista/cvians-excel-table');
     const { ExcelTable, ExcelTableHeader, ExcelTableHead, ExcelTableBody, ExcelTableRow, ExcelTableCell } = module;
     
     console.log('✅ Package imported successfully on server side');

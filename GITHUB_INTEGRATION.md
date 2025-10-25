@@ -81,7 +81,7 @@ You have two options for npm publishing:
 #### Option B: Use your personal scope (backup)
 ```json
 {
-  "name": "@cod-vista/cvians-core",
+  "name": "@cod-vista/cvians-excel-table",
   "name": "@cod-vista/cvians-cli"
 }
 ```

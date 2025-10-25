@@ -4,7 +4,7 @@ Your Cvians UI component library is now fully configured and ready for publishin
 
 ## ✅ Pre-Publishing Checklist
 
-- [x] ✅ Package names configured (`@codvista/cvians-core`, `@codvista/cvians-cli`)
+- [x] ✅ Package names configured (`@codvista/cvians-excel-table`, `@codvista/cvians-cli`)
 - [x] ✅ Repository URLs and metadata added
 - [x] ✅ Individual README files created for each package
 - [x] ✅ Changesets configuration initialized
@@ -36,12 +36,12 @@ Your Cvians UI component library is now fully configured and ready for publishin
 
 ```bash
 # Check if @cvians scope is available
-npm info @codvista/cvians-core
+npm info @codvista/cvians-excel-table
 npm info @codvista/cvians-cli
 ```
 
 If the packages don't exist, you're good to go! If they exist, you may need to:
-- Use a different scope (e.g., `@your-username/cvians-core`)
+- Use a different scope (e.g., `@your-username/cvians-excel-table`)
 - Choose different package names
 
 ### Step 3: Create Your First Changeset
@@ -55,7 +55,7 @@ pnpm changeset
 ```
 
 When prompted:
-1. **Select packages**: Choose both `@codvista/cvians-core` and `@codvista/cvians-cli`
+1. **Select packages**: Choose both `@codvista/cvians-excel-table` and `@codvista/cvians-cli`
 2. **Change type**: Select `major` (for initial 1.0.0 release) or `minor` (for 0.1.0)
 3. **Summary**: Enter something like "Initial release of Cvians UI components"
 
@@ -119,7 +119,7 @@ If `@cvians` is not available, update package names:
 ### Core Package
 ```json
 {
-  "name": "@cod-vista/cvians-core"
+  "name": "@cod-vista/cvians-excel-table"
 }
 ```
 
@@ -141,8 +141,8 @@ Test your published packages:
 
 ```bash
 # Test core package
-npm install @codvista/cvians-core
-# or npm install @cod-vista/cvians-core
+npm install @codvista/cvians-excel-table
+# or npm install @cod-vista/cvians-excel-table
 
 # Test CLI package  
 npm install -g @codvista/cvians-cli

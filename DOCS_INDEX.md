@@ -10,12 +10,12 @@ Welcome to the complete documentation for Cvians UI Components - a modern React/
 npm install -g @codvista/cvians-cli
 
 # Install core components
-npm install @codvista/cvians-core
+npm install @codvista/cvians-excel-table
 ```
 
 ### Basic Usage
 ```tsx
-import { ExcelTable } from '@codvista/cvians-core';
+import { ExcelTable } from '@codvista/cvians-excel-table';
 
 const data = [
   { name: 'John', age: 30, city: 'New York' },
@@ -66,7 +66,7 @@ export default function App() {
 ## 🔗 **External Links**
 
 ### NPM Packages
-- **Core Components**: [`@codvista/cvians-core`](https://www.npmjs.com/package/@codvista/cvians-core)
+- **Core Components**: [`@codvista/cvians-excel-table`](https://www.npmjs.com/package/@codvista/cvians-excel-table)
 - **CLI Tool**: [`@codvista/cvians-cli`](https://www.npmjs.com/package/@codvista/cvians-cli)
 
 ### GitHub Resources
@@ -78,7 +78,7 @@ export default function App() {
 ## 🎯 **Quick Navigation**
 
 ### For Users
-1. **Install**: `npm install @codvista/cvians-core`
+1. **Install**: `npm install @codvista/cvians-excel-table`
 2. **Learn**: Check [Examples](./examples/README.md)
 3. **Implement**: Use [Core README](./packages/core/README.md)
 4. **Support**: See [Troubleshooting](./TROUBLESHOOTING.md)
@@ -99,7 +99,7 @@ export default function App() {
 
 | Component | Status | Features | Package |
 |-----------|--------|----------|---------|
-| **ExcelTable** | ✅ Released | Filtering, Sorting, Type-aware | `@codvista/cvians-core` |
+| **ExcelTable** | ✅ Released | Filtering, Sorting, Type-aware | `@codvista/cvians-excel-table` |
 | **CLI Tool** | ✅ Released | Component installation, Project init | `@codvista/cvians-cli` |
 
 ## 🏷️ **Current Version**

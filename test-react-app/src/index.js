@@ -8,7 +8,7 @@ import {
   ExcelTableBody, 
   ExcelTableRow, 
   ExcelTableCell 
-} from '@codvista/cvians-core';
+} from '@codvista/cvians-excel-table';
 
 // Comprehensive test data with various data types
 const testData = [
@@ -21,7 +21,7 @@ const testData = [
 ];
 
 function App() {
-  console.log('🧪 Testing @codvista/cvians-core@2.0.1 - JSON Stringify Fix');
+  console.log('🧪 Testing @codvista/cvians-excel-table@2.0.1 - JSON Stringify Fix');
   
   // Monitor for infinite loops - use ref instead of state to avoid causing re-renders
   const renderCount = React.useRef(0);
@@ -45,7 +45,7 @@ function App() {
     <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
       <div className="test-status">
         <h1>🎯 Cvians Excel Table - Final Test</h1>
-        <p><strong>Package:</strong> @codvista/cvians-core@2.0.1</p>
+        <p><strong>Package:</strong> @codvista/cvians-excel-table@2.0.1</p>
         <p><strong>Render Count:</strong> {displayCount} {displayCount > 5 ? '⚠️' : '✅'}</p>
         <p><strong>Status:</strong> {displayCount < 10 ? '✅ No infinite loops detected' : '❌ Possible infinite loop'}</p>
       </div>
@@ -162,7 +162,7 @@ root.render(<App />);
 setTimeout(() => {
   console.log('🎉 Test completed successfully!');
   console.log('✅ No infinite loops detected in initial render');
-  console.log('🚀 @codvista/cvians-core@2.0.1 is ready for production!');
+  console.log('🚀 @codvista/cvians-excel-table@2.0.1 is ready for production!');
 }, 2000);
 
 // Find the ExcelTableHead component and add debug logging

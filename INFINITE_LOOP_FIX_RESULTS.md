@@ -83,7 +83,7 @@ const contextValue = React.useMemo(() => ({
 
 ## Production Ready
 
-The @codvista/cvians-core package is now ready for production use:
+The @codvista/cvians-excel-table package is now ready for production use:
 
 - ✅ No infinite loops or performance issues
 - ✅ Compatible with React 18+ and Next.js 13+

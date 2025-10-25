@@ -28,7 +28,7 @@ If applicable, add screenshots to help explain your problem.
  - Browser [e.g. chrome, safari]
  - Version [e.g. 22]
  - Framework [e.g. React, Next.js, Vite]
- - Package version [e.g. @codvista/cvians-core@0.2.0]
+ - Package version [e.g. @codvista/cvians-excel-table@0.2.0]
 
 **Additional context**
 Add any other context about the problem here.

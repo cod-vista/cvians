@@ -56,7 +56,7 @@ npm whoami
 
 ```bash
 # Check if your desired package names are available
-npm info @codvista/cvians-core
+npm info @codvista/cvians-excel-table
 npm info @codvista/cvians-cli
 ```
 
@@ -66,7 +66,7 @@ npm info @codvista/cvians-cli
 
 **If packages exist:**
 - You'll need to use different names
-- Consider: `@cod-vista/cvians-core` and `@cod-vista/cvians-cli`
+- Consider: `@cod-vista/cvians-excel-table` and `@cod-vista/cvians-cli`
 
 ### 4. **Email Compatibility Issue**
 
@@ -100,7 +100,7 @@ If `@cvians` scope is not available, update your package.json files:
 **Update packages/core/package.json:**
 ```json
 {
-  "name": "@cod-vista/cvians-core"
+  "name": "@cod-vista/cvians-excel-table"
 }
 ```
 
@@ -157,7 +157,7 @@ pnpm changeset publish
 
 ### **"Package already exists"**
 - Check if package names are available with `npm info`
-- Use alternative names with your scope: `@cod-vista/cvians-core`
+- Use alternative names with your scope: `@cod-vista/cvians-excel-table`
 
 ### **"Authentication failed"**
 - Verify NPM_TOKEN is correctly added to GitHub secrets
@@ -179,7 +179,7 @@ Your setup is working when you see:
 - ✅ GitHub Actions show green checkmarks
 - ✅ Packages appear on npmjs.com
 - ✅ CLI installs globally: `npm install -g @codvista/cvians-cli`
-- ✅ Components can be imported: `import { ExcelTable } from '@codvista/cvians-core'`
+- ✅ Components can be imported: `import { ExcelTable } from '@codvista/cvians-excel-table'`
 
 ## 📊 After Publishing
 
@@ -194,14 +194,14 @@ cvians --help
 mkdir test-cvians
 cd test-cvians
 npm init -y
-npm install @codvista/cvians-core
+npm install @codvista/cvians-excel-table
 ```
 
 ## 🔗 Monitoring
 
-- **NPM packages**: https://npmjs.com/package/@codvista/cvians-core
+- **NPM packages**: https://npmjs.com/package/@codvista/cvians-excel-table
 - **GitHub releases**: https://github.com/cod-vista/cvians/releases
-- **Download stats**: https://npmjs.com/package/@codvista/cvians-core
+- **Download stats**: https://npmjs.com/package/@codvista/cvians-excel-table
 
 ---
 

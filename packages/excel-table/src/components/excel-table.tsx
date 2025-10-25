@@ -1120,6 +1120,7 @@ export function ExcelTableHead({
   const [uniqueValues, setUniqueValues] = React.useState<string[]>([]);
   const [selectedFilters, setSelectedFilters] = React.useState<string[]>([]);
   const [isPopoverOpen, setIsPopoverOpen] = React.useState(false);
+  const [searchTerm, setSearchTerm] = React.useState<string>("");
   const [headerElement, setHeaderElement] = React.useState<HTMLElement | null>(
     null
   );
@@ -1176,7 +1177,8 @@ export function ExcelTableHead({
         }
       }
     });
-    setUniqueValues(Array.from(values).sort());
+    const sortedValues = Array.from(values).sort();
+    setUniqueValues(sortedValues);
   }, [context?.rawRows?.length, columnIndex, dataType]); // Only depend on length, not the full array
 
   // Sync selectedFilters with context filters - use ref to prevent infinite loops
@@ -1268,10 +1270,12 @@ export function ExcelTableHead({
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-80 p-0">
-                  <DateFilterPopover
-                    columnIndex={Number(columnIndex)}
-                    uniqueValues={uniqueValues}
-                  />
+                  <div className="max-h-[300px] overflow-auto">
+                    <DateFilterPopover
+                      columnIndex={Number(columnIndex)}
+                      uniqueValues={uniqueValues}
+                    />
+                  </div>
                 </PopoverContent>
               </Popover>
             ) : filterable ? (
@@ -1305,9 +1309,23 @@ export function ExcelTableHead({
                         </Button>
                       )}
                     </div>
+                    
+                    <div className="mb-3">
+                      <input
+                        type="text"
+                        placeholder="Search..."
+                        className="w-full px-2 py-1 text-sm border rounded"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                      />
+                    </div>
 
-                    <div className="space-y-2 max-h-64 overflow-y-auto">
-                      {uniqueValues.map((value) => (
+                    <div className="space-y-2 max-h-[300px] overflow-y-auto">
+                      {uniqueValues
+                        .filter(value => 
+                          String(value).toLowerCase().includes(searchTerm.toLowerCase())
+                        )
+                        .map((value) => (
                         <div
                           key={value}
                           className="flex items-center space-x-2"

@@ -2,7 +2,7 @@
 import React from 'react';
 
 // This import works WITHOUT requiring "use client" in the consuming component!
-import { ExcelTable, ExcelTableHeader, ExcelTableHead, ExcelTableBody, ExcelTableRow, ExcelTableCell } from '@codvista/cvians-core';
+import { ExcelTable, ExcelTableHeader, ExcelTableHead, ExcelTableBody, ExcelTableRow, ExcelTableCell } from '@codvista/cvians-excel-table';
 
 console.log('🔧 Testing both major fixes...');
 
@@ -44,4 +44,4 @@ console.log('   2. ✅ Filter button infinite loop fixed');
 console.log('   3. ✅ Full SSR compatibility maintained');
 console.log('   4. ✅ All Excel table functionality preserved');
 
-console.log('🚀 @codvista/cvians-core@1.0.3 is production ready!');
+console.log('🚀 @codvista/cvians-excel-table@1.0.3 is production ready!');

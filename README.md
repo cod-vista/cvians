@@ -1,6 +1,6 @@
 # Cvians UI Components
 
-[![npm version](https://badge.fury.io/js/@codvista%2Fcvians-core.svg)](https://badge.fury.io/js/@codvista%2Fcvians-core)
+[![npm version](https://badge.fury.io/js/@codvista%2Fcvians-excel-table.svg)](https://badge.fury.io/js/@codvista%2Fcvians-excel-table)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/%3C%2F%3E-TypeScript-%230074c1.svg)](http://www.typescriptlang.org/)
 
@@ -24,17 +24,17 @@ A modern React/Preact component library providing Excel-like table functionality
 
 Using npm:
 ```bash
-npm install @codvista/cvians-core
+npm install @codvista/cvians-excel-table
 ```
 
 **Using pnpm:**
 ```bash
-pnpm add @codvista/cvians-core
+pnpm add @codvista/cvians-excel-table
 ```
 
 **Using yarn:**
 ```bash
-yarn add @codvista/cvians-core
+yarn add @codvista/cvians-excel-table
 ```
 
 ### CLI Installation (Recommended)
@@ -64,7 +64,7 @@ import {
   ExcelTableBody,
   ExcelTableRow,
   ExcelTableCell,
-} from "@codvista/cvians-core"
+} from "@codvista/cvians-excel-table"
 
 function BasicExample() {
   const data = [
@@ -186,7 +186,7 @@ export default {
 
 This is a monorepo containing:
 
-- `@codvista/cvians-core` - Core components including Excel-like tables
+- `@codvista/cvians-excel-table` - Core components including Excel-like tables
 - `@codvista/cvians-cli` - CLI installation tool
 
 ## 🔮 Roadmap
@@ -212,4 +212,4 @@ MIT License - see [LICENSE](LICENSE) file for details.
 - [Documentation](./DOCUMENTATION.md)
 - [Examples](./examples/README.md)
 - [GitHub](https://github.com/cod-vista/cvians)
-- [npm](https://www.npmjs.com/package/@codvista/cvians-core)
+- [npm](https://www.npmjs.com/package/@codvista/cvians-excel-table)
