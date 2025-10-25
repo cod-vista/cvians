@@ -32,9 +32,9 @@ importers:
 
   examples:
     dependencies:
-      '@codvista/cvians-core':
+      '@codvista/cvians-excel-table':
         specifier: workspace:*
-        version: link:../packages/core
+        version: link:../packages/excel-table
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -89,7 +89,7 @@ importers:
         specifier: ^5.6.3
         version: 5.9.3
 
-  packages/core:
+  packages/excel-table:
     dependencies:
       '@radix-ui/react-accordion':
         specifier: ^1.2.12
