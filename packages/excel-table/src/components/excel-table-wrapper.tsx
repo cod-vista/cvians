@@ -18,13 +18,41 @@ import {
 // Re-export types
 export type { DataType, SortDirection }
 
-// Create client-side wrapper components that can be imported without "use client"
-export function ExcelTable({ children, className }: { children: ReactNode; className?: string }) {
-  return <ExcelTableClient className={className}>{children}</ExcelTableClient>
+// Define proper interfaces that extend HTML element props
+interface ExcelTableProps extends React.ComponentPropsWithoutRef<"table"> {
+  children: ReactNode;
 }
 
-export function ExcelTableHeader({ children, className }: { children: ReactNode; className?: string }) {
-  return <ExcelTableHeaderClient className={className}>{children}</ExcelTableHeaderClient>
+interface ExcelTableHeaderProps extends React.ComponentPropsWithoutRef<"th"> {
+  children: ReactNode;
+}
+
+interface ExcelTableHeadProps extends React.ComponentPropsWithoutRef<"thead"> {
+  children: ReactNode;
+  filterable?: boolean;
+  sortable?: boolean;
+  dataType?: DataType;
+}
+
+interface ExcelTableBodyProps extends React.ComponentPropsWithoutRef<"tbody"> {
+  children: ReactNode;
+}
+
+interface ExcelTableRowProps extends React.ComponentPropsWithoutRef<"tr"> {
+  children: ReactNode;
+}
+
+interface ExcelTableCellProps extends React.ComponentPropsWithoutRef<"td"> {
+  children: ReactNode;
+}
+
+// Create client-side wrapper components that can be imported without "use client"
+export function ExcelTable({ children, ...props }: ExcelTableProps) {
+  return <ExcelTableClient {...props}>{children}</ExcelTableClient>
+}
+
+export function ExcelTableHeader({ children, ...props }: ExcelTableHeaderProps) {
+  return <ExcelTableHeaderClient {...props}>{children}</ExcelTableHeaderClient>
 }
 
 export function ExcelTableHead({ 
@@ -32,34 +60,28 @@ export function ExcelTableHead({
   filterable = false, 
   sortable = false, 
   dataType = 'string' as DataType,
-  className 
-}: { 
-  children: ReactNode
-  filterable?: boolean
-  sortable?: boolean
-  dataType?: DataType
-  className?: string 
-}) {
+  ...props
+}: ExcelTableHeadProps) {
   return (
     <ExcelTableHeadClient 
       filterable={filterable} 
       sortable={sortable} 
       dataType={dataType}
-      className={className}
+      {...props}
     >
       {children}
     </ExcelTableHeadClient>
   )
 }
 
-export function ExcelTableBody({ children, className }: { children: ReactNode; className?: string }) {
-  return <ExcelTableBodyClient className={className}>{children}</ExcelTableBodyClient>
+export function ExcelTableBody({ children, ...props }: ExcelTableBodyProps) {
+  return <ExcelTableBodyClient {...props}>{children}</ExcelTableBodyClient>
 }
 
-export function ExcelTableRow({ children, className }: { children: ReactNode; className?: string }) {
-  return <ExcelTableRowClient className={className}>{children}</ExcelTableRowClient>
+export function ExcelTableRow({ children, ...props }: ExcelTableRowProps) {
+  return <ExcelTableRowClient {...props}>{children}</ExcelTableRowClient>
 }
 
-export function ExcelTableCell({ children, className }: { children: ReactNode; className?: string }) {
-  return <ExcelTableCellClient className={className}>{children}</ExcelTableCellClient>
+export function ExcelTableCell({ children, ...props }: ExcelTableCellProps) {
+  return <ExcelTableCellClient {...props}>{children}</ExcelTableCellClient>
 }
