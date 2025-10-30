@@ -1,6 +1,6 @@
 {
   "name": "@codvista/cvians-excel-table",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Excel-like table components with advanced filtering, sorting, and data type awareness",
   "type": "module",
   "main": "./dist/index.js",
@@ -64,7 +64,7 @@
   "peerDependencies": {
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
-    "lucide-react": "^0.451.0",
+    "lucide-react": "^0.548.0",
     "react": ">=16.8.0 <21.0.0",
     "react-dom": ">=16.8.0 <21.0.0"
   },

@@ -1,5 +1,11 @@
 # @codvista/cvians-excel-table
 
+## 2.2.0
+
+### Minor Changes
+
+- updated lucide react peer deps to allow latest version
+
 ## 2.1.0
 
 ### Minor Changes
