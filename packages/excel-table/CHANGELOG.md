@@ -1,5 +1,17 @@
 # @codvista/cvians-excel-table
 
+## 2.1.0
+
+### Minor Changes
+
+- updated dependencies packages to the latest version to avoide unneecessary build errors
+
+## 2.0.0
+
+### Major Changes
+
+- react version issue fixed and reduced bundel size by utilizing peet deps
+
 ## 2.0.0
 
 ### Major Changes

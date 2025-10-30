@@ -19,6 +19,14 @@ Core components for the Cvians UI library, featuring Excel-like tables with adva
 npm install @codvista/cvians-excel-table
 ```
 
+### Peer Dependencies
+
+This package has the following peer dependencies that you may need to install in your project:
+
+```bash
+npm install react react-dom class-variance-authority clsx lucide-react
+```
+
 Or using the CLI (recommended):
 
 ```bash

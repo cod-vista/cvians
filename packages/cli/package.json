@@ -25,6 +25,8 @@
     "components",
     "ui",
     "cvians",
+    "cvians cli",
+    "cvians-cli",
     "installer",
     "shadcn",
     "react",
