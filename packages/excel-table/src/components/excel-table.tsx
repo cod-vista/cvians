@@ -851,8 +851,8 @@ const extractCellValue = (
     }
   }
 
-  if (React.isValidElement(cell) && cell.props.children) {
-    const content = cell.props.children;
+  if (React.isValidElement(cell) && (cell.props as any)?.children) {
+    const content = (cell.props as any).children;
     if (typeof content === "string" || typeof content === "number") {
       switch (dataType) {
         case "number":
@@ -950,7 +950,7 @@ export function ExcelTable({ children, className, ...props }: ExcelTableProps) {
       processedRows = processedRows.filter((row) => {
         if (!React.isValidElement(row)) return true;
 
-        const cells = React.Children.toArray(row.props.children);
+        const cells = React.Children.toArray((row.props as any).children);
         const cellValue = extractCellValue(
           cells[parseInt(columnIndex)],
           columnTypes[columnIndex] || "string"
@@ -967,7 +967,7 @@ export function ExcelTable({ children, className, ...props }: ExcelTableProps) {
       processedRows = processedRows.filter((row) => {
         if (!React.isValidElement(row)) return true;
 
-        const cells = React.Children.toArray(row.props.children);
+        const cells = React.Children.toArray((row.props as any).children);
         const cellValue = extractCellValue(
           cells[parseInt(columnIndex)],
           columnTypes[columnIndex] || "string"
@@ -998,8 +998,8 @@ export function ExcelTable({ children, className, ...props }: ExcelTableProps) {
       processedRows.sort((a, b) => {
         if (!React.isValidElement(a) || !React.isValidElement(b)) return 0;
 
-        const aCells = React.Children.toArray(a.props.children);
-        const bCells = React.Children.toArray(b.props.children);
+        const aCells = React.Children.toArray((a.props as any).children);
+        const bCells = React.Children.toArray((b.props as any).children);
 
         const aValue = extractCellValue(
           aCells[parseInt(columnIndex)],
@@ -1160,7 +1160,7 @@ export function ExcelTableHead({
     const values = new Set<string>();
     context.rawRows.forEach((row) => {
       if (React.isValidElement(row)) {
-        const cells = React.Children.toArray(row.props.children);
+        const cells = React.Children.toArray((row.props as any).children);
         const cellValue = extractCellValue(
           cells[parseInt(columnIndex)],
           dataType
