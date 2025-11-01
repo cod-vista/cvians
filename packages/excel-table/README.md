@@ -9,6 +9,8 @@ Core components for the Cvians UI library, featuring Excel-like tables with adva
 - 🎯 **Type-aware** - Handles string, number, date, and boolean data types
 - 🎨 **Customizable** - Built with Tailwind CSS and shadcn/ui design system
 - 📱 **Responsive** - Works seamlessly across all screen sizes
+- 📄 **Pagination** - Built-in pagination for handling large datasets efficiently
+- 🎭 **Themable** - Fully compatible with shadcn/ui theming system
 - ♿ **Accessible** - Full keyboard navigation and screen reader support
 - 🔧 **Easy to use** - Same syntax as regular HTML tables
 - ⚡ **Framework agnostic** - Works with both React and Preact
@@ -102,6 +104,9 @@ Main container component.
 |------|------|---------|-------------|
 | `children` | `ReactNode` | - | Table content |
 | `className` | `string` | - | Additional CSS classes |
+| `pagination` | `boolean` | `false` | Enable pagination for the table |
+| `rowsPerPageOptions` | `number[]` | `[10, 25, 50, 100]` | Options for rows per page dropdown |
+| `defaultRowsPerPage` | `number` | `30` | Default number of rows to display per page |
 
 ### ExcelTableHead
 

@@ -5,6 +5,8 @@ import type { ReactNode } from "react";
 import {
   ChevronDown,
   ChevronUp,
+  ChevronLeft,
+  ChevronRight,
   Filter,
   X,
   Calendar,
@@ -38,6 +40,10 @@ import {
   type RelativeDateType,
   type DateFilterType,
 } from "./excel-table-context";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
+import { Select, SelectItem, SelectValue } from "./ui/select";
+import { SelectTrigger } from "@radix-ui/react-select";
 
 // Re-export types for convenience
 export type { DataType, SortDirection, DateFilter };
@@ -586,9 +592,9 @@ function DateFilterPopover({
 
         {filterMode === "hierarchy" ? (
           <div className="space-y-2">
-            <label className="text-xs font-medium text-gray-600">
+            <Label className="text-xs font-medium text-gray-600">
               Select Dates:
-            </label>
+            </Label>
             <div className="max-h-64 overflow-y-auto">
               {/* @ts-ignore - Radix UI accordion type issue */}
               <Accordion type="multiple" className="w-full">
@@ -652,7 +658,7 @@ function DateFilterPopover({
                                         day: DateHierarchy["months"][0]["days"][0],
                                         dayIndex: number
                                       ) => (
-                                        <label
+                                        <Label
                                           key={`${day.day}-${day.fullDate}`}
                                           className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 px-2 py-1 rounded text-sm"
                                         >
@@ -676,7 +682,7 @@ function DateFilterPopover({
                                               day.fullDate
                                             ).toLocaleDateString()}
                                           </span>
-                                        </label>
+                                        </Label>
                                       )
                                     )}
                                   </div>
@@ -694,9 +700,9 @@ function DateFilterPopover({
           </div>
         ) : filterMode === "relative" ? (
           <div className="space-y-2">
-            <label className="text-xs font-medium text-gray-600">
+            <Label className="text-xs font-medium text-gray-600">
               Quick Filters:
-            </label>
+            </Label>
             <div className="grid grid-cols-1 gap-1 max-h-32 overflow-y-auto">
               {relativeOptions.map((option) => (
                 <button
@@ -736,9 +742,9 @@ function DateFilterPopover({
             {filterType === "between" ? (
               <div className="space-y-2">
                 <div>
-                  <label className="text-xs font-medium text-gray-600">
+                  <Label className="text-xs font-medium text-gray-600">
                     From:
-                  </label>
+                  </Label>
                   <input
                     type="date"
                     value={startDate}
@@ -747,9 +753,9 @@ function DateFilterPopover({
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-medium text-gray-600">
+                  <Label className="text-xs font-medium text-gray-600">
                     To:
-                  </label>
+                  </Label>
                   <input
                     type="date"
                     value={endDate}
@@ -760,9 +766,9 @@ function DateFilterPopover({
               </div>
             ) : (
               <div>
-                <label className="text-xs font-medium text-gray-600">
+                <Label className="text-xs font-medium text-gray-600">
                   Date:
-                </label>
+                </Label>
                 <input
                   type="date"
                   value={customDate}
@@ -782,9 +788,9 @@ function DateFilterPopover({
       {/* Active Filters */}
       {selectedFilters.length > 0 && (
         <div className="space-y-2 mb-4">
-          <label className="text-xs font-medium text-gray-600">
+          <Label className="text-xs font-medium text-gray-600">
             Active Filters:
-          </label>
+          </Label>
           <div className="space-y-1 max-h-24 overflow-y-auto">
             {selectedFilters.map((filter, index) => (
               <div
@@ -941,74 +947,100 @@ export function ExcelTable({ children, className, ...props }: ExcelTableProps) {
   );
 
   const getFilteredAndSortedData = React.useCallback((): ReactNode[] => {
-    let processedRows = [...rawRows];
+    // Create a cached version of the raw rows to avoid unnecessary processing
+    const cachedRows = React.useMemo(() => [...rawRows], [rawRows]);
 
-    // Apply regular filters
-    Object.entries(filters).forEach(([columnIndex, filterValues]) => {
-      if (filterValues.length === 0) return;
+    // Early return if no filters or sorts are applied
+    const hasFilters = Object.values(filters).some((f) => f.length > 0);
+    const hasDateFilters = Object.values(dateFilters).some((f) => f.length > 0);
+    const hasSorts = Object.values(sorts).some((s) => s !== null);
 
+    if (!hasFilters && !hasDateFilters && !hasSorts) {
+      return cachedRows;
+    }
+
+    // Apply regular filters - optimize by using a single pass approach
+    let processedRows = cachedRows;
+
+    if (hasFilters || hasDateFilters) {
       processedRows = processedRows.filter((row) => {
         if (!React.isValidElement(row)) return true;
 
         const cells = React.Children.toArray((row.props as any).children);
-        const cellValue = extractCellValue(
-          cells[parseInt(columnIndex)],
-          columnTypes[columnIndex] || "string"
-        );
 
-        return filterValues.includes(String(cellValue));
-      });
-    });
+        // Check all filters in a single pass
+        for (const [columnIndex, filterValues] of Object.entries(filters)) {
+          if (filterValues.length === 0) continue;
 
-    // Apply date filters
-    Object.entries(dateFilters).forEach(([columnIndex, filterList]) => {
-      if (filterList.length === 0) return;
+          const colIdx = parseInt(columnIndex);
+          const dataType = columnTypes[columnIndex] || "string";
+          const cellValue = extractCellValue(cells[colIdx], dataType);
 
-      processedRows = processedRows.filter((row) => {
-        if (!React.isValidElement(row)) return true;
-
-        const cells = React.Children.toArray((row.props as any).children);
-        const cellValue = extractCellValue(
-          cells[parseInt(columnIndex)],
-          columnTypes[columnIndex] || "string"
-        );
-
-        if (columnTypes[columnIndex] === "date") {
-          if (cellValue instanceof Date && !isNaN(cellValue.getTime())) {
-            return filterList.some((filter) =>
-              matchesDateFilter(cellValue, filter)
-            );
+          if (!filterValues.includes(String(cellValue))) {
+            return false;
           }
-          // If it's a date column but not a valid date, exclude it from results
-          return false;
+        }
+
+        // Check all date filters in a single pass
+        for (const [columnIndex, filterList] of Object.entries(dateFilters)) {
+          if (filterList.length === 0) continue;
+
+          const colIdx = parseInt(columnIndex);
+          const dataType = columnTypes[columnIndex] || "string";
+          const cellValue = extractCellValue(cells[colIdx], dataType);
+
+          if (dataType === "date") {
+            if (cellValue instanceof Date && !isNaN(cellValue.getTime())) {
+              if (
+                !filterList.some((filter) =>
+                  matchesDateFilter(cellValue, filter)
+                )
+              ) {
+                return false;
+              }
+            } else {
+              // If it's a date column but not a valid date, exclude it
+              return false;
+            }
+          }
         }
 
         return true;
       });
-    });
+    }
 
     // Apply sorting - now single column only (Excel-style)
     const sortEntries = Object.entries(sorts).filter(
       ([, direction]) => direction !== null && direction !== undefined
     );
+
     if (sortEntries.length > 0) {
       // Should only be one entry now due to Excel-style single column sorting
       const [columnIndex, direction] = sortEntries[0];
+      const colIdx = parseInt(columnIndex);
+      const dataType = columnTypes[columnIndex] || "string";
+
+      // Pre-extract values for faster sorting
+      const valueCache = new Map();
 
       processedRows.sort((a, b) => {
         if (!React.isValidElement(a) || !React.isValidElement(b)) return 0;
 
-        const aCells = React.Children.toArray((a.props as any).children);
-        const bCells = React.Children.toArray((b.props as any).children);
+        // Use cached values if available
+        let aValue = valueCache.get(a);
+        let bValue = valueCache.get(b);
 
-        const aValue = extractCellValue(
-          aCells[parseInt(columnIndex)],
-          columnTypes[columnIndex] || "string"
-        );
-        const bValue = extractCellValue(
-          bCells[parseInt(columnIndex)],
-          columnTypes[columnIndex] || "string"
-        );
+        if (aValue === undefined) {
+          const aCells = React.Children.toArray((a.props as any).children);
+          aValue = extractCellValue(aCells[colIdx], dataType);
+          valueCache.set(a, aValue);
+        }
+
+        if (bValue === undefined) {
+          const bCells = React.Children.toArray((b.props as any).children);
+          bValue = extractCellValue(bCells[colIdx], dataType);
+          valueCache.set(b, bValue);
+        }
 
         // Improved comparison logic to handle different types better
         let comparison = 0;
@@ -1228,10 +1260,14 @@ export function ExcelTableHead({
 
   const currentSort = context?.sorts[columnIndex];
   const hasActiveFilter = (context?.filters[columnIndex]?.length ?? 0) > 0;
-  const hasActiveDateFilter = (context?.dateFilters[columnIndex]?.length ?? 0) > 0;
+  const hasActiveDateFilter =
+    (context?.dateFilters[columnIndex]?.length ?? 0) > 0;
 
   return (
-    <TableHead ref={setHeaderElement as React.Ref<HTMLTableCellElement>} {...(props as React.ThHTMLAttributes<HTMLTableCellElement>)}>
+    <TableHead
+      ref={setHeaderElement as React.Ref<HTMLTableCellElement>}
+      {...(props as React.ThHTMLAttributes<HTMLTableCellElement>)}
+    >
       <div className="flex items-center space-x-2">
         <span>{children}</span>
 
@@ -1309,12 +1345,12 @@ export function ExcelTableHead({
                         </Button>
                       )}
                     </div>
-                    
+
                     <div className="mb-3">
-                      <input
+                      <Input
                         type="text"
                         placeholder="Search..."
-                        className="w-full px-2 py-1 text-sm border rounded"
+                        className="w-full h-9 rounded-md border border-input bg-background px-3 py-1 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                       />
@@ -1322,45 +1358,50 @@ export function ExcelTableHead({
 
                     <div className="space-y-2 max-h-[300px] overflow-y-auto">
                       {uniqueValues
-                        .filter(value => 
-                          String(value).toLowerCase().includes(searchTerm.toLowerCase())
+                        .filter((value) =>
+                          String(value)
+                            .toLowerCase()
+                            .includes(searchTerm.toLowerCase())
                         )
                         .map((value) => (
-                        <div
-                          key={value}
-                          className="flex items-center space-x-2"
-                        >
-                          <Checkbox
-                            id={`filter-${value}`}
-                            checked={selectedFilters.includes(value)}
-                            onCheckedChange={(checked: boolean) => {
-                              if (checked) {
-                                setSelectedFilters((prev) => [...prev, value]);
-                              } else {
-                                setSelectedFilters((prev) =>
-                                  prev.filter((v) => v !== value)
-                                );
-                              }
-                            }}
-                          />
-                          <label
-                            htmlFor={`filter-${value}`}
-                            className="text-sm cursor-pointer flex-1 truncate"
+                          <div
+                            key={value}
+                            className="flex items-center space-x-2"
                           >
-                            {dataType === "boolean"
-                              ? value === "true" ||
-                                value === "yes" ||
-                                value === "Yes"
-                                ? "✓ True"
-                                : value === "false" ||
-                                  value === "no" ||
-                                  value === "No"
-                                ? "✗ False"
-                                : value
-                              : value || "(Empty)"}
-                          </label>
-                        </div>
-                      ))}
+                            <Checkbox
+                              id={`filter-${value}`}
+                              checked={selectedFilters.includes(value)}
+                              onCheckedChange={(checked: boolean) => {
+                                if (checked) {
+                                  setSelectedFilters((prev) => [
+                                    ...prev,
+                                    value,
+                                  ]);
+                                } else {
+                                  setSelectedFilters((prev) =>
+                                    prev.filter((v) => v !== value)
+                                  );
+                                }
+                              }}
+                            />
+                            <Label
+                              htmlFor={`filter-${value}`}
+                              className="text-sm cursor-pointer flex-1 truncate"
+                            >
+                              {dataType === "boolean"
+                                ? value === "true" ||
+                                  value === "yes" ||
+                                  value === "Yes"
+                                  ? "✓ True"
+                                  : value === "false" ||
+                                    value === "no" ||
+                                    value === "No"
+                                  ? "✗ False"
+                                  : value
+                                : value || "(Empty)"}
+                            </Label>
+                          </div>
+                        ))}
                     </div>
 
                     <div className="flex space-x-2 mt-3 pt-3 border-t">
@@ -1398,6 +1439,11 @@ interface ExcelTableBodyProps extends React.ComponentPropsWithoutRef<"tbody"> {
 
 export function ExcelTableBody({ children, ...props }: ExcelTableBodyProps) {
   const context = React.useContext(TableContext);
+  const containerRef = React.useRef<HTMLTableSectionElement>(null);
+
+  // Pagination state
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(30);
 
   // Use useMemo to memoize the rows array to prevent unnecessary updates
   const rows = React.useMemo(
@@ -1411,29 +1457,120 @@ export function ExcelTableBody({ children, ...props }: ExcelTableBodyProps) {
 
   React.useEffect(() => {
     if (context) {
-      // Only update if the count of rows actually changed - avoid JSON.stringify on React elements
-      const currentRowCount = rows.length;
-      const _currentChildrenCount = React.Children.count(children);
-
-      if (
-        currentRowCount !== lastRowsRef.current.length ||
-        !rowsSetRef.current
-      ) {
-        lastRowsRef.current = rows;
-        rowsSetRef.current = true;
-        context.setRawRows(rows);
-      }
+      // Always update the raw rows to ensure content changes are detected
+      // even when the row count remains the same
+      lastRowsRef.current = rows;
+      rowsSetRef.current = true;
+      context.setRawRows(rows);
     }
   }, [rows, context]);
 
   if (!context) return null;
 
+  // Enhanced memoization for filtered and sorted data
+  // This will only recalculate when filters, sorts, or raw data changes
   const processedRows = React.useMemo(
     () => context.getFilteredAndSortedData(),
-    [context]
+    [context.filters, context.dateFilters, context.sorts, context.rawRows]
   );
 
-  return <TableBody {...props}>{processedRows}</TableBody>;
+  // Apply pagination to rows
+  const paginatedRows = React.useMemo(() => {
+    const startIndex = page * rowsPerPage;
+    const endIndex = startIndex + rowsPerPage;
+    return processedRows.slice(startIndex, endIndex);
+  }, [processedRows, page, rowsPerPage]);
+
+  // Handle page change
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+  };
+
+  // Handle rows per page change
+  const handleRowsPerPageChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  // Pagination component
+  const PaginationControls = React.useMemo(() => {
+    const totalPages = Math.ceil(processedRows.length / rowsPerPage);
+    const startRow = processedRows.length > 0 ? page * rowsPerPage + 1 : 0;
+    const endRow = Math.min((page + 1) * rowsPerPage, processedRows.length);
+
+    return (
+      <div className="flex items-center justify-between px-4 py-2 border-t border-border">
+        <div className="flex items-center space-x-2">
+          <span className="text-sm text-muted-foreground">Rows per page:</span>
+          <Select
+            onValueChange={() => handleRowsPerPageChange}
+            value={`${rowsPerPage}`}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder={rowsPerPage}>{rowsPerPage}</SelectValue>
+            </SelectTrigger>
+            {[5, 10, 25, 30, 50, 100].map((option) => (
+              <SelectItem key={option} value={`${option}`}>
+                {option}
+              </SelectItem>
+            ))}
+          </Select>
+        </div>
+
+        <div className="flex items-center space-x-2">
+          <span className="text-sm text-muted-foreground">
+            {processedRows.length > 0
+              ? `${startRow}-${endRow} of ${processedRows.length}`
+              : "0 items"}
+          </span>
+          <div className="flex items-center space-x-1">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePageChange(page - 1)}
+              disabled={page === 0}
+              className="h-8 w-8 p-0"
+            >
+              <span className="sr-only">Previous page</span>
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePageChange(page + 1)}
+              disabled={page >= totalPages - 1}
+              className="h-8 w-8 p-0"
+            >
+              <span className="sr-only">Next page</span>
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }, [processedRows.length, page, rowsPerPage]);
+
+  return (
+    <div className="flex flex-col">
+      <TableBody ref={containerRef} {...props}>
+        {paginatedRows.length === 0 ? (
+          <TableRow>
+            <TableCell
+              colSpan={100}
+              className="h-24 text-center text-muted-foreground"
+            >
+              No data available
+            </TableCell>
+          </TableRow>
+        ) : (
+          paginatedRows
+        )}
+      </TableBody>
+      {processedRows.length > 0 && PaginationControls}
+    </div>
+  );
 }
 
 // ExcelTableRow Component
@@ -1441,15 +1578,23 @@ interface ExcelTableRowProps extends React.ComponentPropsWithoutRef<"tr"> {
   children: ReactNode;
 }
 
-export function ExcelTableRow({ children, ...props }: ExcelTableRowProps) {
+// Memoized row component to prevent unnecessary re-renders
+export const ExcelTableRow = React.memo(function ExcelTableRowComponent({
+  children,
+  ...props
+}: ExcelTableRowProps) {
   return <TableRow {...props}>{children}</TableRow>;
-}
+});
 
 // ExcelTableCell Component
 interface ExcelTableCellProps extends React.ComponentPropsWithoutRef<"td"> {
   children: ReactNode;
 }
 
-export function ExcelTableCell({ children, ...props }: ExcelTableCellProps) {
+// Memoized cell component to prevent unnecessary re-renders
+export const ExcelTableCell = React.memo(function ExcelTableCellComponent({
+  children,
+  ...props
+}: ExcelTableCellProps) {
   return <TableCell {...props}>{children}</TableCell>;
-}
+});

@@ -1,5 +1,31 @@
 # @codvista/cvians-excel-table
 
+## 2.5.0
+
+### Minor Changes
+
+- updated fixed header issue resolution- testing
+
+## 2.4.0
+
+### Minor Changes
+
+- Minor Changes
+
+  - Added pagination support for handling large datasets efficiently
+  - Enhanced Tailwind CSS and shadcn/ui integration for better theming
+  - Fixed row comparison logic to properly detect content changes
+  - Fixed TypeScript error related to missing ExcelTableRowProps interface
+
+## 2.3.0
+
+### Minor Changes
+
+- Added pagination support for handling large datasets efficiently
+- Enhanced Tailwind CSS and shadcn/ui integration for better theming
+- Fixed row comparison logic to properly detect content changes
+- Fixed TypeScript error related to missing ExcelTableRowProps interface
+
 ## 2.2.0
 
 ### Minor Changes
