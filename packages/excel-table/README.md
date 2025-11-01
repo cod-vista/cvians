@@ -105,7 +105,7 @@ Main container component.
 | `children` | `ReactNode` | - | Table content |
 | `className` | `string` | - | Additional CSS classes |
 | `pagination` | `boolean` | `false` | Enable pagination for the table |
-| `rowsPerPageOptions` | `number[]` | `[10, 25, 50, 100]` | Options for rows per page dropdown |
+| `rowsPerPageOptions` | `number[]` | `[10, 20, 30, 50, 100]` | Options for rows per page dropdown |
 | `defaultRowsPerPage` | `number` | `30` | Default number of rows to display per page |
 
 ### ExcelTableHead

@@ -21,6 +21,9 @@ export type { DataType, SortDirection }
 // Define proper interfaces that extend HTML element props
 interface ExcelTableProps extends React.ComponentPropsWithoutRef<"table"> {
   children: ReactNode;
+  pagination?: boolean;
+  defaultRowsPerPage?: number;
+  rowsPerPageOptions?: number[];
 }
 
 interface ExcelTableHeaderProps extends React.ComponentPropsWithoutRef<"th"> {
@@ -36,6 +39,9 @@ interface ExcelTableHeadProps extends React.ComponentPropsWithoutRef<"thead"> {
 
 interface ExcelTableBodyProps extends React.ComponentPropsWithoutRef<"tbody"> {
   children: ReactNode;
+  pagination?: boolean;
+  defaultRowsPerPage?: number;
+  rowsPerPageOptions?: number[];
 }
 
 interface ExcelTableRowProps extends React.ComponentPropsWithoutRef<"tr"> {
@@ -47,8 +53,21 @@ interface ExcelTableCellProps extends React.ComponentPropsWithoutRef<"td"> {
 }
 
 // Create client-side wrapper components that can be imported without "use client"
-export function ExcelTable({ children, ...props }: ExcelTableProps) {
-  return <ExcelTableClient {...props}>{children}</ExcelTableClient>
+export function ExcelTable({ 
+  children, 
+  pagination = false,
+  defaultRowsPerPage = 30,
+  rowsPerPageOptions = [10, 20, 30, 50, 100],
+  ...props 
+}: ExcelTableProps) {
+  return <ExcelTableClient 
+    pagination={pagination}
+    defaultRowsPerPage={defaultRowsPerPage}
+    rowsPerPageOptions={rowsPerPageOptions}
+    {...props}
+  >
+    {children}
+  </ExcelTableClient>
 }
 
 export function ExcelTableHeader({ children, ...props }: ExcelTableHeaderProps) {
@@ -74,8 +93,21 @@ export function ExcelTableHead({
   )
 }
 
-export function ExcelTableBody({ children, ...props }: ExcelTableBodyProps) {
-  return <ExcelTableBodyClient {...props}>{children}</ExcelTableBodyClient>
+export function ExcelTableBody({ 
+  children, 
+  pagination = false,
+  defaultRowsPerPage = 30,
+  rowsPerPageOptions = [10, 20, 30, 50, 100],
+  ...props 
+}: ExcelTableBodyProps) {
+  return <ExcelTableBodyClient 
+    pagination={pagination}
+    defaultRowsPerPage={defaultRowsPerPage}
+    rowsPerPageOptions={rowsPerPageOptions}
+    {...props}
+  >
+    {children}
+  </ExcelTableBodyClient>
 }
 
 export function ExcelTableRow({ children, ...props }: ExcelTableRowProps) {

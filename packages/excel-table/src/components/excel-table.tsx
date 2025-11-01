@@ -887,9 +887,19 @@ const extractCellValue = (
 interface ExcelTableProps extends React.ComponentPropsWithoutRef<"table"> {
   children: ReactNode;
   className?: string;
+  pagination?: boolean;
+  defaultRowsPerPage?: number;
+  rowsPerPageOptions?: number[];
 }
 
-export function ExcelTable({ children, className, ...props }: ExcelTableProps) {
+export function ExcelTable({
+  children,
+  className,
+  pagination = false,
+  defaultRowsPerPage = 30,
+  rowsPerPageOptions = [10, 20, 30, 50, 100],
+  ...props
+}: ExcelTableProps) {
   const [filters, setFilters] = React.useState<Record<string, string[]>>({});
   const [dateFilters, setDateFilters] = React.useState<
     Record<string, DateFilter[]>
@@ -1435,51 +1445,35 @@ export function ExcelTableHead({
 // ExcelTableBody Component
 interface ExcelTableBodyProps extends React.ComponentPropsWithoutRef<"tbody"> {
   children: ReactNode;
+  pagination?: boolean;
+  defaultRowsPerPage?: number;
+  rowsPerPageOptions?: number[];
 }
 
-export function ExcelTableBody({ children, ...props }: ExcelTableBodyProps) {
-  const context = React.useContext(TableContext);
+export function ExcelTableBody({
+  children,
+  pagination = false,
+  defaultRowsPerPage = 30,
+  rowsPerPageOptions = [10, 20, 30, 50, 100],
+  ...props
+}: ExcelTableBodyProps) {
   const containerRef = React.useRef<HTMLTableSectionElement>(null);
 
   // Pagination state
   const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(30);
+  const [rowsPerPage, setRowsPerPage] = React.useState(defaultRowsPerPage);
 
-  // Use useMemo to memoize the rows array to prevent unnecessary updates
-  const rows = React.useMemo(
-    () => React.Children.toArray(children),
-    [children]
-  );
+  // Use direct children array instead of context
+  const rows = React.Children.toArray(children);
 
-  // Use a ref to track if we've already set the rows to prevent infinite loops
-  const rowsSetRef = React.useRef(false);
-  const lastRowsRef = React.useRef<ReactNode[]>([]);
-
-  React.useEffect(() => {
-    if (context) {
-      // Always update the raw rows to ensure content changes are detected
-      // even when the row count remains the same
-      lastRowsRef.current = rows;
-      rowsSetRef.current = true;
-      context.setRawRows(rows);
-    }
-  }, [rows, context]);
-
-  if (!context) return null;
-
-  // Enhanced memoization for filtered and sorted data
-  // This will only recalculate when filters, sorts, or raw data changes
-  const processedRows = React.useMemo(
-    () => context.getFilteredAndSortedData(),
-    [context.filters, context.dateFilters, context.sorts, context.rawRows]
-  );
-
-  // Apply pagination to rows
+  // Apply pagination to rows directly without context filtering
   const paginatedRows = React.useMemo(() => {
+    if (!pagination) return rows;
+
     const startIndex = page * rowsPerPage;
     const endIndex = startIndex + rowsPerPage;
-    return processedRows.slice(startIndex, endIndex);
-  }, [processedRows, page, rowsPerPage]);
+    return rows.slice(startIndex, endIndex);
+  }, [rows, page, rowsPerPage, pagination]);
 
   // Handle page change
   const handlePageChange = (newPage: number) => {
@@ -1494,82 +1488,63 @@ export function ExcelTableBody({ children, ...props }: ExcelTableBodyProps) {
     setPage(0);
   };
 
-  // Pagination component
-  const PaginationControls = React.useMemo(() => {
-    const totalPages = Math.ceil(processedRows.length / rowsPerPage);
-    const startRow = processedRows.length > 0 ? page * rowsPerPage + 1 : 0;
-    const endRow = Math.min((page + 1) * rowsPerPage, processedRows.length);
-
-    return (
-      <div className="flex items-center justify-between px-4 py-2 border-t border-border">
-        <div className="flex items-center space-x-2">
-          <span className="text-sm text-muted-foreground">Rows per page:</span>
-          <Select
-            onValueChange={() => handleRowsPerPageChange}
-            value={`${rowsPerPage}`}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder={rowsPerPage}>{rowsPerPage}</SelectValue>
-            </SelectTrigger>
-            {[5, 10, 25, 30, 50, 100].map((option) => (
-              <SelectItem key={option} value={`${option}`}>
-                {option}
-              </SelectItem>
-            ))}
-          </Select>
-        </div>
-
-        <div className="flex items-center space-x-2">
-          <span className="text-sm text-muted-foreground">
-            {processedRows.length > 0
-              ? `${startRow}-${endRow} of ${processedRows.length}`
-              : "0 items"}
-          </span>
-          <div className="flex items-center space-x-1">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handlePageChange(page - 1)}
-              disabled={page === 0}
-              className="h-8 w-8 p-0"
-            >
-              <span className="sr-only">Previous page</span>
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handlePageChange(page + 1)}
-              disabled={page >= totalPages - 1}
-              className="h-8 w-8 p-0"
-            >
-              <span className="sr-only">Next page</span>
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
-  }, [processedRows.length, page, rowsPerPage]);
-
   return (
-    <div className="flex flex-col">
-      <TableBody ref={containerRef} {...props}>
-        {paginatedRows.length === 0 ? (
-          <TableRow>
-            <TableCell
-              colSpan={100}
-              className="h-24 text-center text-muted-foreground"
-            >
-              No data available
-            </TableCell>
-          </TableRow>
-        ) : (
-          paginatedRows
-        )}
-      </TableBody>
-      {processedRows.length > 0 && PaginationControls}
-    </div>
+    <tbody ref={containerRef} {...props}>
+      {pagination ? paginatedRows : rows}
+
+      {pagination && (
+        <tr className="border-t">
+          <td colSpan={1000} className="p-2">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <span className="text-sm text-muted-foreground">
+                  Rows per page:
+                </span>
+                <select
+                  value={rowsPerPage}
+                  onChange={handleRowsPerPageChange}
+                  className="h-8 w-16 rounded-md border border-input bg-background text-sm"
+                >
+                  {rowsPerPageOptions.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <span className="text-sm text-muted-foreground">
+                  {page * rowsPerPage + 1}-
+                  {Math.min((page + 1) * rowsPerPage, rows.length)} of{" "}
+                  {rows.length}
+                </span>
+                <div className="flex items-center space-x-1">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => handlePageChange(page - 1)}
+                    disabled={page === 0}
+                    className="h-8 w-8"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => handlePageChange(page + 1)}
+                    disabled={(page + 1) * rowsPerPage >= rows.length}
+                    className="h-8 w-8"
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+      )}
+    </tbody>
   );
 }
 
