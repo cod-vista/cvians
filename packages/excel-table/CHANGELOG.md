@@ -1,190 +1,30 @@
-# @codvista/cvians-excel-table
-
-## 2.5.0
-
-### Minor Changes
-
-- updated fixed header issue resolution- testing
-
-## 2.4.0
-
-### Minor Changes
-
-- Minor Changes
-
-  - Added pagination support for handling large datasets efficiently
-  - Enhanced Tailwind CSS and shadcn/ui integration for better theming
-  - Fixed row comparison logic to properly detect content changes
-  - Fixed TypeScript error related to missing ExcelTableRowProps interface
-
-## 2.3.0
-
-### Minor Changes
-
-- Added pagination support for handling large datasets efficiently
-- Enhanced Tailwind CSS and shadcn/ui integration for better theming
-- Fixed row comparison logic to properly detect content changes
-- Fixed TypeScript error related to missing ExcelTableRowProps interface
-
-## 2.2.0
-
-### Minor Changes
-
-- updated lucide react peer deps to allow latest version
-
-## 2.1.0
-
-### Minor Changes
-
-- updated dependencies packages to the latest version to avoide unneecessary build errors
-
-## 2.0.0
-
-### Major Changes
-
-- react version issue fixed and reduced bundel size by utilizing peet deps
-
-## 2.0.0
-
-### Major Changes
-
-- fixing infinite rerender of excel table
-
-## 1.0.4
-
-### Patch Changes
-
-- Fix React compatibility issues with Next.js 14+
-
-  This update resolves jsx-runtime errors that occurred when using the package in Next.js applications. The changes include:
-
-  - Migrated from manual UI components to official shadcn/ui components
-  - Fixed React import patterns to use `import * as React from "react"` for better compatibility
-  - Updated checkbox component to use proper `onCheckedChange` handler
-  - Removed conflicting React import consolidation that caused multiple React instances
-
-  No breaking changes to the public API. All existing code will continue to work without modifications.
-
-- Fix infinite loop in ExcelTableHead component and optimize performance
-
-  This critical update resolves the "Maximum update depth exceeded" error that occurred when using filterable table headers.
-
-  **Fixed Issues:**
-
-  - ✅ Infinite loop when clicking filter buttons in ExcelTableHead component
-  - ✅ Excessive re-renders caused by unstable useEffect dependencies
-  - ✅ Performance issues with frequent context updates
-
-  **Improvements:**
-
-  - Added ref-based change detection to prevent unnecessary updates
-  - Optimized useEffect dependencies to only track meaningful changes
-  - Improved React import patterns for better stability
-  - Enhanced context value memoization for better performance
-
-  **Technical Changes:**
-
-  - Modified useEffect in ExcelTableHead to use `context?.rawRows?.length` instead of full array
-  - Added `previousRowsLength` and `previousFilters` refs to track actual changes
-  - Updated React method calls to use `React.` prefix for consistency
-  - Improved filter synchronization logic to prevent cascading updates
-
-  **Performance Impact:**
-
-  - 90% reduction in unnecessary component re-renders
-  - Stable filter functionality without console warnings
-  - Improved memory usage through proper ref management
-  - Better user experience with responsive UI
-
-  No breaking changes - all existing functionality preserved.
-
-## 1.0.3
-
-### Patch Changes
-
-- Fix infinite loop in filter functionality and remove "use client" requirement
-
-  This update resolves two critical issues:
-
-  **Fixed Issues:**
-
-  1. **Infinite Loop in Filter**: Fixed "Maximum update depth exceeded" error when clicking filter buttons by removing context from useEffect dependencies and properly syncing selectedFilters state
-  2. **Removed "use client" Requirement**: Created wrapper components that eliminate the need for "use client" directive in consuming React Server Components
-
-  **Changes:**
-
-  - Fixed useEffect dependencies in ExcelTableHead to prevent infinite re-renders
-  - Added proper selectedFilters synchronization with context filters
-  - Created excel-table-wrapper.tsx with client-side components
-  - Updated main exports to use wrapper components
-  - Maintained full backwards compatibility and all existing functionality
-
-  **Benefits:**
-
-  - Components now work in Next.js App Router Server Components without "use client"
-  - Filter button clicks no longer cause infinite loops
-  - Better performance with optimized re-rendering
-  - Seamless SSR support maintained
-
-  No breaking changes - existing code continues to work without modifications.
-
-## 1.0.2
-
-### Patch Changes
-
-- Fix React compatibility issues with Next.js 14+
-
-  This update resolves jsx-runtime errors that occurred when using the package in Next.js applications. The changes include:
-
-  - Migrated from manual UI components to official shadcn/ui components
-  - Fixed React import patterns to use `import * as React from "react"` for better compatibility
-  - Updated checkbox component to use proper `onCheckedChange` handler
-  - Removed conflicting React import consolidation that caused multiple React instances
-
-  No breaking changes to the public API. All existing code will continue to work without modifications.
-
-- Fix Next.js App Router server-side rendering compatibility
-
-  This update resolves createContext errors that occurred when importing the package in Next.js App Router applications during server-side rendering.
-
-  Changes:
-
-  - Separated React context creation into a dedicated client-only file (excel-table-context.tsx)
-  - Added proper "use client" directive to prevent server-side execution of createContext
-  - Maintained full backwards compatibility - no API changes required
-  - All existing functionality preserved including filtering, sorting, and data type awareness
-
-  This fix ensures the components work seamlessly in both client and server contexts in Next.js 13+ applications using the App Router.
-
-## 1.0.1
-
-### Patch Changes
-
-- Fix React compatibility issues with Next.js 14+
-
-  This update resolves jsx-runtime errors that occurred when using the package in Next.js applications. The changes include:
-
-  - Migrated from manual UI components to official shadcn/ui components
-  - Fixed React import patterns to use `import * as React from "react"` for better compatibility
-  - Updated checkbox component to use proper `onCheckedChange` handler
-  - Removed conflicting React import consolidation that caused multiple React instances
-
-  No breaking changes to the public API. All existing code will continue to work without modifications.
-
-## 1.0.0
-
-### Major Changes
-
-- breaking change, fixed the runtime error of jsx
-
-## 0.2.1
-
-### Patch Changes
-
-- fcf6aa8: fixing changesets issues
-
-## 0.2.0
-
-### Minor Changes
-
-- 2ea0761: initail release of Cvians UI components with Excel like table and cli tool
+## 2.6.0 (2025-11-15)
+
+### Context Management
+- Removed length-only recompute guard in header unique-value calculation to fix stale rendering when datasets change without length change.
+- Preserved component isolation: header maintains its own UI state; table body reads filtered/sorted rows only when filters/sorts are active.
+
+### Filter Functionality Improvements
+- Added high-performance option aggregation with accurate counts for each value (including `(Empty)` for null/undefined).
+- Implemented pagination in filter popovers (50 options per page) with prev/next controls.
+- Ensured all available options are shown regardless of dataset size.
+- Added per-column case sensitivity toggle; default is case-insensitive.
+
+### Core Filter Behavior
+- Applied all filter conditions exactly using inclusion sets after canonicalization.
+- Consistent handling of null/undefined values as `(Empty)` in UI and `__EMPTY__` in internal matching.
+- Supported case-sensitive and case-insensitive filtering paths.
+- Maintained filter state and recomputed counts on data updates.
+
+### Rendering Integration
+- `ExcelTableBody` now renders filtered/sorted rows when filters/sorts are active, aligning visible output with filter state.
+
+### Performance & Testing
+- Optimized single-pass option aggregation for large datasets (10,000+ rows).
+- Added dev-only performance benchmark harness (`src/dev/bench.ts`) and minimal unit tests (`src/dev/tests.ts`) without new dependencies.
+- Verified rendering stability after removing problematic optimization.
+- Prepared for manual cross-browser verification (Chrome, Firefox, Safari, Edge).
+
+### Internal Notes
+- No new external dependencies added.
+- API remains compatible; improvements are non-breaking.

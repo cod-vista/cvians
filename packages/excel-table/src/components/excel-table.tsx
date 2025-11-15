@@ -173,20 +173,13 @@ interface DateHierarchy {
 interface DateFilterPopoverProps {
   columnIndex: number;
   uniqueValues: string[];
+  table: TableContextType;
 }
 
-function DateFilterPopover({
-  columnIndex,
-  uniqueValues,
-}: DateFilterPopoverProps) {
-  const context = React.useContext(TableContext);
-  if (!context)
-    throw new Error("DateFilterPopover must be used within ExcelTable");
-
-  // Get current filters from context instead of local state
+function DateFilterPopover({ columnIndex, uniqueValues, table }: DateFilterPopoverProps) {
   const currentFilters = React.useMemo(
-    () => context.dateFilters[String(columnIndex)] || [],
-    [context.dateFilters, columnIndex]
+    () => table.dateFilters[String(columnIndex)] || [],
+    [table.dateFilters, columnIndex]
   );
   const hasActiveFilter = currentFilters.length > 0;
   const [filterMode, setFilterMode] = React.useState<
@@ -490,9 +483,9 @@ function DateFilterPopover({
         type: "equals",
         value: date,
       }));
-      context.setDateFilter(String(columnIndex), filters);
+      table.setDateFilter(String(columnIndex), filters);
     } else {
-      context.setDateFilter(String(columnIndex), selectedFilters);
+      table.setDateFilter(String(columnIndex), selectedFilters);
     }
   };
 
@@ -514,8 +507,8 @@ function DateFilterPopover({
         })),
       }));
     });
-    context.setDateFilter(String(columnIndex), []);
-  }, [context, columnIndex]);
+    table.setDateFilter(String(columnIndex), []);
+  }, [table, columnIndex]);
 
   const getFilterDescription = (filter: DateFilter): string => {
     switch (filter.type) {
@@ -912,6 +905,11 @@ export function ExcelTable({
   const [headerRefs, setHeaderRefs] = React.useState<
     Record<string, HTMLElement>
   >({});
+  const [caseSensitive, setCaseSensitiveMap] = React.useState<Record<string, boolean>>({});
+
+  React.useEffect(() => {
+    setRawRows(React.Children.toArray(children));
+  }, [children]);
 
   const setFilter = React.useCallback((column: string, values: string[]) => {
     setFilters((prev) => ({ ...prev, [column]: values }));
@@ -985,10 +983,14 @@ export function ExcelTable({
           const colIdx = parseInt(columnIndex);
           const dataType = columnTypes[columnIndex] || "string";
           const cellValue = extractCellValue(cells[colIdx], dataType);
-
-          if (!filterValues.includes(String(cellValue))) {
-            return false;
-          }
+          const sensitive = caseSensitive[columnIndex] ?? false;
+          const canonical = (v: any) => {
+            if (v == null || v === "") return "__EMPTY__";
+            const s = String(v);
+            return sensitive ? s : s.toLowerCase();
+          };
+          const selected = new Set(filterValues.map((v) => sensitive ? v : String(v).toLowerCase()));
+          if (!selected.has(canonical(cellValue))) return false;
         }
 
         // Check all date filters in a single pass
@@ -1077,7 +1079,7 @@ export function ExcelTable({
     }
 
     return processedRows;
-  }, [rawRows, filters, dateFilters, sorts, columnTypes]);
+  }, [rawRows, filters, dateFilters, sorts, columnTypes, caseSensitive]);
 
   const contextValue: TableContextType = React.useMemo(
     () => ({
@@ -1094,6 +1096,9 @@ export function ExcelTable({
       columnTypes,
       headerRefs,
       setHeaderRef,
+      caseSensitive,
+      setCaseSensitive: (column: string, value: boolean) =>
+        setCaseSensitiveMap((prev) => ({ ...prev, [column]: value })),
     }),
     [
       filters,
@@ -1109,8 +1114,9 @@ export function ExcelTable({
       registerColumn,
       setRawRows,
       setHeaderRef,
+      caseSensitive,
     ]
-  ); // Include all callback dependencies
+  );
 
   return (
     <TableContext.Provider value={contextValue}>
@@ -1183,22 +1189,13 @@ export function ExcelTableHead({
     }
   }, [headerElement, dataType, context, columnIndex]); // Include columnIndex to prevent unnecessary updates
 
-  // Extract unique values for filtering - use a ref to track previous length
-  const previousRowsLength = React.useRef(0);
+  const [optionCounts, setOptionCounts] = React.useState<Record<string, number>>({});
+  const [optionPage, setOptionPage] = React.useState(0);
+  const [caseSensitiveLocal, setCaseSensitiveLocal] = React.useState(false);
+  const pageSize = 50;
   React.useEffect(() => {
     if (!context || !columnIndex || !context.rawRows) return;
-
-    // Only update if the number of rows changed to avoid unnecessary recalculations
-    const currentLength = context.rawRows.length;
-
-    if (
-      currentLength === previousRowsLength.current &&
-      previousRowsLength.current > 0
-    )
-      return;
-
-    previousRowsLength.current = currentLength;
-
+    const counts: Record<string, number> = {};
     const values = new Set<string>();
     context.rawRows.forEach((row) => {
       if (React.isValidElement(row)) {
@@ -1207,36 +1204,33 @@ export function ExcelTableHead({
           cells[parseInt(columnIndex)],
           dataType
         );
-        if (
-          dataType === "date" &&
-          cellValue instanceof Date &&
-          !isNaN(cellValue.getTime())
-        ) {
-          // normalize date values to YYYY-MM-DD for consistent parsing later
-          values.add(formatDate(cellValue));
-        } else {
-          values.add(String(cellValue));
-        }
+        const v =
+          dataType === "date" && cellValue instanceof Date && !isNaN(cellValue.getTime())
+            ? formatDate(cellValue)
+            : String(cellValue ?? "");
+        const label = v === "" ? "(Empty)" : v;
+        const key = v === "" ? "__EMPTY__" : (caseSensitiveLocal ? v : v.toLowerCase());
+        values.add(label);
+        counts[key] = (counts[key] ?? 0) + 1;
       }
     });
     const sortedValues = Array.from(values).sort();
     setUniqueValues(sortedValues);
-  }, [context?.rawRows?.length, columnIndex, dataType]); // Only depend on length, not the full array
+    setOptionCounts(counts);
+    setOptionPage(0);
+  }, [context?.rawRows, columnIndex, dataType, caseSensitiveLocal]);
 
   // Sync selectedFilters with context filters - use ref to prevent infinite loops
   const previousFilters = React.useRef<string[]>([]);
   React.useEffect(() => {
     if (!context || !columnIndex) return;
     const contextFilters = context.filters[columnIndex] || [];
-
-    // Only update if the filters actually changed
-    if (
-      JSON.stringify(contextFilters) !== JSON.stringify(previousFilters.current)
-    ) {
+    if (JSON.stringify(contextFilters) !== JSON.stringify(previousFilters.current)) {
       previousFilters.current = contextFilters;
       setSelectedFilters(contextFilters);
     }
-  }, [context?.filters?.[columnIndex], columnIndex]); // Only monitor this specific column's filters
+    setCaseSensitiveLocal(Boolean(context.caseSensitive[columnIndex]));
+  }, [context?.filters?.[columnIndex], context?.caseSensitive?.[columnIndex], columnIndex]);
 
   const handleSort = () => {
     if (!context || !columnIndex) return;
@@ -1320,6 +1314,7 @@ export function ExcelTableHead({
                     <DateFilterPopover
                       columnIndex={Number(columnIndex)}
                       uniqueValues={uniqueValues}
+                      table={context as TableContextType}
                     />
                   </div>
                 </PopoverContent>
@@ -1373,6 +1368,7 @@ export function ExcelTableHead({
                             .toLowerCase()
                             .includes(searchTerm.toLowerCase())
                         )
+                        .slice(optionPage * pageSize, optionPage * pageSize + pageSize)
                         .map((value) => (
                           <div
                             key={value}
@@ -1410,11 +1406,47 @@ export function ExcelTableHead({
                                   : value
                                 : value || "(Empty)"}
                             </Label>
+                            <span className="text-xs text-muted-foreground">
+                              {optionCounts[value === "(Empty)" ? "__EMPTY__" : (caseSensitiveLocal ? value : String(value).toLowerCase())] ?? 0}
+                            </span>
                           </div>
                         ))}
                     </div>
+                    <div className="flex items-center justify-between mt-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        disabled={optionPage === 0}
+                        onClick={() => setOptionPage((p) => Math.max(0, p - 1))}
+                      >
+                        <ChevronLeft className="h-3 w-3" />
+                      </Button>
+                      <span className="text-xs">Page {optionPage + 1}</span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        disabled={(optionPage + 1) * pageSize >= uniqueValues.filter((v) => String(v).toLowerCase().includes(searchTerm.toLowerCase())).length}
+                        onClick={() => setOptionPage((p) => p + 1)}
+                      >
+                        <ChevronRight className="h-3 w-3" />
+                      </Button>
+                    </div>
 
-                    <div className="flex space-x-2 mt-3 pt-3 border-t">
+                    <div className="flex items-center justify-between mt-3 pt-3 border-t">
+                      <label className="flex items-center gap-2 text-xs">
+                        <Checkbox
+                          checked={caseSensitiveLocal}
+                          onCheckedChange={(checked: boolean) => {
+                            setCaseSensitiveLocal(checked);
+                            if (context && columnIndex) {
+                              context.setCaseSensitive(String(columnIndex), checked);
+                            }
+                          }}
+                        />
+                        Case sensitive
+                      </label>
+                    </div>
+                    <div className="flex space-x-2 mt-2">
                       <Button
                         size="sm"
                         onClick={handleFilter}
@@ -1463,8 +1495,16 @@ export function ExcelTableBody({
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(defaultRowsPerPage);
 
-  // Use direct children array instead of context
-  const rows = React.Children.toArray(children);
+  const context = React.useContext(TableContext);
+  const directRows = React.Children.toArray(children);
+  const rows = React.useMemo(() => {
+    if (!context) return directRows;
+    const hasFilters = Object.values(context.filters).some((f) => f.length > 0);
+    const hasDateFilters = Object.values(context.dateFilters).some((f) => f.length > 0);
+    const hasSorts = Object.values(context.sorts).some((s) => s !== null);
+    if (hasFilters || hasDateFilters || hasSorts) return context.getFilteredAndSortedData();
+    return directRows;
+  }, [context, directRows]);
 
   // Apply pagination to rows directly without context filtering
   const paginatedRows = React.useMemo(() => {

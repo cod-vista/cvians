@@ -33,7 +33,8 @@ export interface TableContextType {
   columnTypes: Record<string, DataType>
   headerRefs: Record<string, HTMLElement>
   setHeaderRef: (index: string, element: HTMLElement) => void
+  caseSensitive: Record<string, boolean>
+  setCaseSensitive: (column: string, value: boolean) => void
 }
 
-// Create context in client-only file
 export const TableContext = React.createContext<TableContextType | null>(null)
