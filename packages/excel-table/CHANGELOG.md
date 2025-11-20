@@ -1,3 +1,18 @@
+## 2.8.1 (2025-11-20)
+
+### Critical Hotfix
+
+- **Fixed array mutation bug** - Sort operation was mutating the original rawRows array, causing React state corruption and crashes
+- **Added bounds checking** - Prevent crashes when accessing columns that don't exist
+- **Added error handling** - Wrapped unique values extraction in try-catch to prevent filter popover crashes
+- **Fixed empty filter display** - Added validation to ensure column index is valid before extracting values
+
+### What Was Fixed:
+- Sort button now works without freezing the UI
+- Filter popover correctly shows all data values (not empty)
+- Page no longer crashes after sorting
+- All features remain functional after sort operations
+
 ## 2.8.0 (2025-11-20)
 
 ### Critical Fixes

@@ -978,6 +978,10 @@ export function ExcelTable({
           if (filterValues.length === 0) continue;
 
           const colIdx = parseInt(columnIndex);
+          
+          // Check if column index is valid
+          if (colIdx >= cells.length) continue;
+          
           const dataType = columnTypes[columnIndex] || "string";
           const cellValue = extractCellValue(cells[colIdx], dataType);
           const sensitive = caseSensitive[columnIndex] ?? false;
@@ -1010,6 +1014,10 @@ export function ExcelTable({
           if (filterList.length === 0) continue;
 
           const colIdx = parseInt(columnIndex);
+          
+          // Check if column index is valid
+          if (colIdx >= cells.length) continue;
+          
           const dataType = columnTypes[columnIndex] || "string";
           const cellValue = extractCellValue(cells[colIdx], dataType);
 
@@ -1044,6 +1052,9 @@ export function ExcelTable({
       const colIdx = parseInt(columnIndex);
       const dataType = columnTypes[columnIndex] || "string";
 
+      // Create a copy to avoid mutating the original array
+      processedRows = [...processedRows];
+
       // Pre-extract values for faster sorting
       const valueCache = new Map();
 
@@ -1057,13 +1068,21 @@ export function ExcelTable({
 
           if (aValue === undefined) {
             const aCells = React.Children.toArray((a.props as any).children);
-            aValue = extractCellValue(aCells[colIdx], dataType);
+            if (colIdx < aCells.length) {
+              aValue = extractCellValue(aCells[colIdx], dataType);
+            } else {
+              aValue = null;
+            }
             valueCache.set(a, aValue);
           }
 
           if (bValue === undefined) {
             const bCells = React.Children.toArray((b.props as any).children);
-            bValue = extractCellValue(bCells[colIdx], dataType);
+            if (colIdx < bCells.length) {
+              bValue = extractCellValue(bCells[colIdx], dataType);
+            } else {
+              bValue = null;
+            }
             valueCache.set(b, bValue);
           }
 
@@ -1208,38 +1227,49 @@ export function ExcelTableHead({
   const [caseSensitiveLocal, setCaseSensitiveLocal] = React.useState(false);
   React.useEffect(() => {
     if (!context || !columnIndex || !context.rawRows) return;
-    const counts: Record<string, number> = {};
-    const values = new Set<string>();
-    context.rawRows.forEach((row) => {
-      if (React.isValidElement(row)) {
-        const cells = React.Children.toArray((row.props as any).children);
-        const cellValue = extractCellValue(
-          cells[parseInt(columnIndex)],
-          dataType
-        );
-        
-        // Handle all value types including null/empty
-        let displayValue: string;
-        let countKey: string;
-        
-        if (cellValue === null || cellValue === undefined || cellValue === "") {
-          displayValue = "(Empty)";
-          countKey = "__EMPTY__";
-        } else if (dataType === "date" && cellValue instanceof Date && !isNaN(cellValue.getTime())) {
-          displayValue = formatDate(cellValue);
-          countKey = caseSensitiveLocal ? displayValue : displayValue.toLowerCase();
-        } else {
-          displayValue = String(cellValue);
-          countKey = caseSensitiveLocal ? displayValue : displayValue.toLowerCase();
+    
+    try {
+      const counts: Record<string, number> = {};
+      const values = new Set<string>();
+      const colIdx = parseInt(columnIndex);
+      
+      context.rawRows.forEach((row) => {
+        if (React.isValidElement(row)) {
+          const cells = React.Children.toArray((row.props as any).children);
+          
+          // Check if column index is valid
+          if (colIdx >= cells.length) return;
+          
+          const cellValue = extractCellValue(cells[colIdx], dataType);
+          
+          // Handle all value types including null/empty
+          let displayValue: string;
+          let countKey: string;
+          
+          if (cellValue === null || cellValue === undefined || cellValue === "") {
+            displayValue = "(Empty)";
+            countKey = "__EMPTY__";
+          } else if (dataType === "date" && cellValue instanceof Date && !isNaN(cellValue.getTime())) {
+            displayValue = formatDate(cellValue);
+            countKey = caseSensitiveLocal ? displayValue : displayValue.toLowerCase();
+          } else {
+            displayValue = String(cellValue);
+            countKey = caseSensitiveLocal ? displayValue : displayValue.toLowerCase();
+          }
+          
+          values.add(displayValue);
+          counts[countKey] = (counts[countKey] || 0) + 1;
         }
-        
-        values.add(displayValue);
-        counts[countKey] = (counts[countKey] || 0) + 1;
-      }
-    });
-    const sortedValues = Array.from(values).sort();
-    setUniqueValues(sortedValues);
-    setOptionCounts(counts);
+      });
+      
+      const sortedValues = Array.from(values).sort();
+      setUniqueValues(sortedValues);
+      setOptionCounts(counts);
+    } catch (error) {
+      console.error("Error extracting unique values:", error);
+      setUniqueValues([]);
+      setOptionCounts({});
+    }
   }, [context?.rawRows, columnIndex, dataType, caseSensitiveLocal]);
 
   // Sync selectedFilters with context filters - use ref to prevent infinite loops
