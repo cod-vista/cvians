@@ -1,3 +1,42 @@
+## 2.9.1 (2025-11-20)
+
+### Critical Bug Fixes - Fully Working Release
+
+- **Fixed "Hooks inside Hooks" error** - Removed nested `React.useMemo` inside `React.useCallback`
+- **Fixed infinite loop on sort/filter** - Resolved circular dependency in ExcelTableBody
+- **Fixed page freeze** - Sort and filter operations no longer cause infinite re-renders
+- **Fixed invalid HTML structure** - ExcelTableBody now manages only body rows, not header rows
+- **Fixed sorting not working** - Data now actually sorts when clicking sort button
+- **Fixed filtering not working** - Data now actually filters when applying filters
+
+### What Was Fixed:
+- React Hook errors: "Do not call Hooks inside useEffect(...), useMemo(...)"
+- Page freeze when clicking sort button
+- Page freeze when applying filters
+- Infinite loop causing browser crash
+- "thead cannot be child of tbody" HTML validation errors
+- Sorting icon changes but data doesn't sort
+- Filtering applies but data doesn't filter
+
+### Technical Details:
+- Removed nested useMemo from getFilteredAndSortedData
+- Added smart array copy: only copies when sorting without filters (prevents state mutation)
+- ExcelTableBody now sets its own children as rawRows in context
+- Removed ExcelTable's useEffect that was setting all children as rawRows
+- Fixed circular dependency between context and ExcelTableBody
+- Stable dependency arrays prevent infinite re-renders
+
+### Tested and Verified:
+- ✅ No console errors
+- ✅ No page freeze
+- ✅ Sorting works correctly
+- ✅ Filtering works correctly
+- ✅ No infinite loops
+- ✅ Valid HTML structure
+
+### UI Improvements:
+- **Removed pagination from filter popover** - Now shows all options in a scrollable list for better UX
+
 ## 2.9.0 (2025-11-20)
 
 ### Stable Release - Rollback from v2.8.x

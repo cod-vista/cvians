@@ -907,9 +907,7 @@ export function ExcelTable({
   >({});
   const [caseSensitive, setCaseSensitiveMap] = React.useState<Record<string, boolean>>({});
 
-  React.useEffect(() => {
-    setRawRows(React.Children.toArray(children));
-  }, [children]);
+  // rawRows will be set by ExcelTableBody, not here
 
   const setFilter = React.useCallback((column: string, values: string[]) => {
     setFilters((prev) => ({ ...prev, [column]: values }));
@@ -955,20 +953,17 @@ export function ExcelTable({
   );
 
   const getFilteredAndSortedData = React.useCallback((): ReactNode[] => {
-    // Create a cached version of the raw rows to avoid unnecessary processing
-    const cachedRows = React.useMemo(() => [...rawRows], [rawRows]);
-
     // Early return if no filters or sorts are applied
     const hasFilters = Object.values(filters).some((f) => f.length > 0);
     const hasDateFilters = Object.values(dateFilters).some((f) => f.length > 0);
     const hasSorts = Object.values(sorts).some((s) => s !== null);
 
     if (!hasFilters && !hasDateFilters && !hasSorts) {
-      return cachedRows;
+      return rawRows;
     }
 
     // Apply regular filters - optimize by using a single pass approach
-    let processedRows = cachedRows;
+    let processedRows = rawRows;
 
     if (hasFilters || hasDateFilters) {
       processedRows = processedRows.filter((row) => {
@@ -1031,6 +1026,12 @@ export function ExcelTable({
       const [columnIndex, direction] = sortEntries[0];
       const colIdx = parseInt(columnIndex);
       const dataType = columnTypes[columnIndex] || "string";
+
+      // CRITICAL: If processedRows is still pointing to rawRows (no filters applied),
+      // we MUST create a copy before sorting to avoid mutating state
+      if (processedRows === rawRows) {
+        processedRows = [...rawRows];
+      }
 
       // Pre-extract values for faster sorting
       const valueCache = new Map();
@@ -1190,9 +1191,7 @@ export function ExcelTableHead({
   }, [headerElement, dataType, context, columnIndex]); // Include columnIndex to prevent unnecessary updates
 
   const [optionCounts, setOptionCounts] = React.useState<Record<string, number>>({});
-  const [optionPage, setOptionPage] = React.useState(0);
   const [caseSensitiveLocal, setCaseSensitiveLocal] = React.useState(false);
-  const pageSize = 50;
   React.useEffect(() => {
     if (!context || !columnIndex || !context.rawRows) return;
     const counts: Record<string, number> = {};
@@ -1217,7 +1216,6 @@ export function ExcelTableHead({
     const sortedValues = Array.from(values).sort();
     setUniqueValues(sortedValues);
     setOptionCounts(counts);
-    setOptionPage(0);
   }, [context?.rawRows, columnIndex, dataType, caseSensitiveLocal]);
 
   // Sync selectedFilters with context filters - use ref to prevent infinite loops
@@ -1368,7 +1366,6 @@ export function ExcelTableHead({
                             .toLowerCase()
                             .includes(searchTerm.toLowerCase())
                         )
-                        .slice(optionPage * pageSize, optionPage * pageSize + pageSize)
                         .map((value) => (
                           <div
                             key={value}
@@ -1411,25 +1408,6 @@ export function ExcelTableHead({
                             </span>
                           </div>
                         ))}
-                    </div>
-                    <div className="flex items-center justify-between mt-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        disabled={optionPage === 0}
-                        onClick={() => setOptionPage((p) => Math.max(0, p - 1))}
-                      >
-                        <ChevronLeft className="h-3 w-3" />
-                      </Button>
-                      <span className="text-xs">Page {optionPage + 1}</span>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        disabled={(optionPage + 1) * pageSize >= uniqueValues.filter((v) => String(v).toLowerCase().includes(searchTerm.toLowerCase())).length}
-                        onClick={() => setOptionPage((p) => p + 1)}
-                      >
-                        <ChevronRight className="h-3 w-3" />
-                      </Button>
                     </div>
 
                     <div className="flex items-center justify-between mt-3 pt-3 border-t">
@@ -1496,15 +1474,37 @@ export function ExcelTableBody({
   const [rowsPerPage, setRowsPerPage] = React.useState(defaultRowsPerPage);
 
   const context = React.useContext(TableContext);
-  const directRows = React.Children.toArray(children);
+  
+  // ExcelTableBody should manage its own rows for filtering/sorting
+  // Store the body rows in context when this component mounts
+  const bodyRows = React.useMemo(() => React.Children.toArray(children), [children]);
+  
+  React.useEffect(() => {
+    if (context) {
+      context.setRawRows(bodyRows);
+    }
+  }, [bodyRows, context]);
+  
+  // Get the filtered/sorted data from context if filters or sorts are active
   const rows = React.useMemo(() => {
-    if (!context) return directRows;
+    if (!context) return bodyRows;
+    
     const hasFilters = Object.values(context.filters).some((f) => f.length > 0);
     const hasDateFilters = Object.values(context.dateFilters).some((f) => f.length > 0);
     const hasSorts = Object.values(context.sorts).some((s) => s !== null);
-    if (hasFilters || hasDateFilters || hasSorts) return context.getFilteredAndSortedData();
-    return directRows;
-  }, [context, directRows]);
+    
+    if (hasFilters || hasDateFilters || hasSorts) {
+      return context.getFilteredAndSortedData();
+    }
+    
+    return bodyRows;
+  }, [
+    context?.filters,
+    context?.dateFilters, 
+    context?.sorts,
+    context?.getFilteredAndSortedData,
+    bodyRows
+  ]);
 
   // Apply pagination to rows directly without context filtering
   const paginatedRows = React.useMemo(() => {
