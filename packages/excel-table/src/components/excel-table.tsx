@@ -1059,56 +1059,45 @@ export function ExcelTable({
       const valueCache = new Map();
 
       processedRows.sort((a, b) => {
-        try {
-          if (!React.isValidElement(a) || !React.isValidElement(b)) return 0;
+        if (!React.isValidElement(a) || !React.isValidElement(b)) return 0;
 
-          // Use cached values if available
-          let aValue = valueCache.get(a);
-          let bValue = valueCache.get(b);
+        // Use cached values if available
+        let aValue = valueCache.get(a);
+        let bValue = valueCache.get(b);
 
-          if (aValue === undefined) {
-            const aCells = React.Children.toArray((a.props as any).children);
-            if (colIdx < aCells.length) {
-              aValue = extractCellValue(aCells[colIdx], dataType);
-            } else {
-              aValue = null;
-            }
-            valueCache.set(a, aValue);
-          }
-
-          if (bValue === undefined) {
-            const bCells = React.Children.toArray((b.props as any).children);
-            if (colIdx < bCells.length) {
-              bValue = extractCellValue(bCells[colIdx], dataType);
-            } else {
-              bValue = null;
-            }
-            valueCache.set(b, bValue);
-          }
-
-          // Improved comparison logic to handle different types better
-          let comparison = 0;
-
-          // Handle null/undefined values - put them at the end
-          if (aValue == null && bValue == null) comparison = 0;
-          else if (aValue == null) comparison = 1;
-          else if (bValue == null) comparison = -1;
-          else if (typeof aValue === "number" && typeof bValue === "number") {
-            comparison = aValue - bValue;
-          } else if (aValue instanceof Date && bValue instanceof Date) {
-            comparison = aValue.getTime() - bValue.getTime();
-          } else {
-            // String comparison
-            const aStr = String(aValue).toLowerCase();
-            const bStr = String(bValue).toLowerCase();
-            comparison = aStr.localeCompare(bStr);
-          }
-
-          return direction === "desc" ? -comparison : comparison;
-        } catch (error) {
-          console.error("Error comparing values during sort:", error);
-          return 0; // Maintain order on error
+        if (aValue === undefined) {
+          const aCells = React.Children.toArray((a.props as any).children);
+          aValue = extractCellValue(aCells[colIdx], dataType);
+          valueCache.set(a, aValue);
         }
+
+        if (bValue === undefined) {
+          const bCells = React.Children.toArray((b.props as any).children);
+          bValue = extractCellValue(bCells[colIdx], dataType);
+          valueCache.set(b, bValue);
+        }
+
+        // Improved comparison logic to handle different types better
+        let comparison = 0;
+
+        // Handle null/undefined values - put them at the end
+        if (aValue == null && bValue == null) comparison = 0;
+        else if (aValue == null) comparison = 1;
+        else if (bValue == null) comparison = -1;
+        else if (typeof aValue === "number" && typeof bValue === "number") {
+          comparison = aValue - bValue;
+        } else if (aValue instanceof Date && bValue instanceof Date) {
+          comparison = aValue.getTime() - bValue.getTime();
+        } else {
+          // String comparison
+          const aStr = String(aValue).toLowerCase();
+          const bStr = String(bValue).toLowerCase();
+          if (aStr < bStr) comparison = -1;
+          else if (aStr > bStr) comparison = 1;
+          else comparison = 0;
+        }
+
+        return direction === "desc" ? -comparison : comparison;
       });
     }
 
@@ -1287,24 +1276,19 @@ export function ExcelTableHead({
   const handleSort = () => {
     if (!context || !columnIndex) return;
 
-    try {
-      const currentSort = context.sorts[columnIndex];
-      let newDirection: SortDirection;
+    const currentSort = context.sorts[columnIndex];
+    let newDirection: SortDirection;
 
-      // Three-state cycle: null → asc → desc → null
-      if (currentSort === null || currentSort === undefined) {
-        newDirection = "asc";
-      } else if (currentSort === "asc") {
-        newDirection = "desc";
-      } else {
-        newDirection = null;
-      }
-
-      context.setSort(columnIndex, newDirection);
-    } catch (error) {
-      console.error("Error during sort operation:", error);
-      // Maintain current state on error
+    // Three-state cycle: null → asc → desc → null
+    if (currentSort === null || currentSort === undefined) {
+      newDirection = "asc";
+    } else if (currentSort === "asc") {
+      newDirection = "desc";
+    } else {
+      newDirection = null;
     }
+
+    context.setSort(columnIndex, newDirection);
   };
 
   const handleFilter = () => {

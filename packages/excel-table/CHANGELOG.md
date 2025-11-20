@@ -1,3 +1,17 @@
+## 2.8.2 (2025-11-20)
+
+### Hotfix - Revert Sort Changes
+
+- **Reverted sort comparison logic** - Removed try-catch and localeCompare that were causing issues
+- **Kept array copy fix** - Still creates copy before sorting to prevent state mutation
+- **Kept bounds checking** - Safety checks for column access remain in place
+- **Kept error handling in unique values** - Prevents filter popover crashes
+
+### What Changed:
+- Sort logic reverted to original working implementation (v2.7.0)
+- Only keeping the critical fix: array copy before sort to prevent mutation
+- Sorting should now work exactly as it did before v2.8.0
+
 ## 2.8.1 (2025-11-20)
 
 ### Critical Hotfix
