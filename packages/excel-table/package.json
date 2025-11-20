@@ -1,6 +1,6 @@
 {
   "name": "@codvista/cvians-excel-table",
-  "version": "2.7.1",
+  "version": "2.9.0",
   "description": "Excel-like table components with advanced filtering, sorting, and data type awareness",
   "type": "module",
   "main": "./dist/index.js",

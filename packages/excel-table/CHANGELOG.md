@@ -1,15 +1,17 @@
-## 2.7.1 (2025-11-20)
+## 2.9.0 (2025-11-20)
 
-### Rollback to Stable Version
+### Stable Release - Rollback from v2.8.x
 
-- **Complete rollback to v2.7.0** - All changes from v2.8.x reverted
-- **Reason:** v2.8.x changes caused critical issues with filtering and sorting
+- **Complete rollback to v2.7.0 codebase** - All changes from v2.8.x reverted
+- **Reason:** v2.8.0, v2.8.1, v2.8.2 caused critical issues (infinite loops, crashes, broken filtering)
 - **Status:** Back to last known stable working version
+- **Deprecated:** v2.8.0, v2.8.1, v2.8.2 marked as deprecated on npm
 
 ### What This Means:
 - All functionality works exactly as in v2.7.0
 - No new features or changes from v2.8.x
 - Stable, tested, and working version
+- Use this version instead of any 2.8.x version
 
 ## 2.8.2 (2025-11-20) - DEPRECATED
 
