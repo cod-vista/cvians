@@ -9,6 +9,8 @@ dist/
 build/
 .turbo/
 *.tsbuildinfo
+.kiro
+.vscode
 
 # Environment files
 .env
