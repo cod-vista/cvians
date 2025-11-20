@@ -56,8 +56,8 @@ interface ExcelTableCellProps extends React.ComponentPropsWithoutRef<"td"> {
 export function ExcelTable({ 
   children, 
   pagination = false,
-  defaultRowsPerPage = 100,
-  rowsPerPageOptions = [10, 20, 50, 100, 200],
+  defaultRowsPerPage = 30,
+  rowsPerPageOptions = [10, 20, 30, 50, 100],
   ...props 
 }: ExcelTableProps) {
   return <ExcelTableClient 
@@ -96,8 +96,8 @@ export function ExcelTableHead({
 export function ExcelTableBody({ 
   children, 
   pagination = false,
-  defaultRowsPerPage = 100,
-  rowsPerPageOptions = [10, 20, 50, 100, 200],
+  defaultRowsPerPage = 30,
+  rowsPerPageOptions = [10, 20, 30, 50, 100],
   ...props 
 }: ExcelTableBodyProps) {
   return <ExcelTableBodyClient 

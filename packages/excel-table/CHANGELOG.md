@@ -1,3 +1,28 @@
+## 2.7.1 (2025-11-20)
+
+### Rollback to Stable Version
+
+- **Complete rollback to v2.7.0** - All changes from v2.8.x reverted
+- **Reason:** v2.8.x changes caused critical issues with filtering and sorting
+- **Status:** Back to last known stable working version
+
+### What This Means:
+- All functionality works exactly as in v2.7.0
+- No new features or changes from v2.8.x
+- Stable, tested, and working version
+
+## 2.8.2 (2025-11-20) - DEPRECATED
+
+### DO NOT USE - Causes critical issues
+
+## 2.8.1 (2025-11-20) - DEPRECATED
+
+### DO NOT USE - Causes critical issues
+
+## 2.8.0 (2025-11-20) - DEPRECATED
+
+### DO NOT USE - Causes critical issues
+
 ## 2.8.2 (2025-11-20)
 
 ### Hotfix - Revert Sort Changes

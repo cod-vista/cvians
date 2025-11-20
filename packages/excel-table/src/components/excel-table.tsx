@@ -889,8 +889,8 @@ export function ExcelTable({
   children,
   className,
   pagination = false,
-  defaultRowsPerPage = 100,
-  rowsPerPageOptions = [10, 20, 50, 100, 200],
+  defaultRowsPerPage = 30,
+  rowsPerPageOptions = [10, 20, 30, 50, 100],
   ...props
 }: ExcelTableProps) {
   const [filters, setFilters] = React.useState<Record<string, string[]>>({});
@@ -955,17 +955,20 @@ export function ExcelTable({
   );
 
   const getFilteredAndSortedData = React.useCallback((): ReactNode[] => {
+    // Create a cached version of the raw rows to avoid unnecessary processing
+    const cachedRows = React.useMemo(() => [...rawRows], [rawRows]);
+
     // Early return if no filters or sorts are applied
     const hasFilters = Object.values(filters).some((f) => f.length > 0);
     const hasDateFilters = Object.values(dateFilters).some((f) => f.length > 0);
     const hasSorts = Object.values(sorts).some((s) => s !== null);
 
     if (!hasFilters && !hasDateFilters && !hasSorts) {
-      return rawRows;
+      return cachedRows;
     }
 
     // Apply regular filters - optimize by using a single pass approach
-    let processedRows = rawRows;
+    let processedRows = cachedRows;
 
     if (hasFilters || hasDateFilters) {
       processedRows = processedRows.filter((row) => {
@@ -978,35 +981,16 @@ export function ExcelTable({
           if (filterValues.length === 0) continue;
 
           const colIdx = parseInt(columnIndex);
-          
-          // Check if column index is valid
-          if (colIdx >= cells.length) continue;
-          
           const dataType = columnTypes[columnIndex] || "string";
           const cellValue = extractCellValue(cells[colIdx], dataType);
           const sensitive = caseSensitive[columnIndex] ?? false;
-          
-          // Normalize value for comparison
-          const normalizeValue = (v: any): string => {
-            if (v === null || v === undefined || v === "") return "__EMPTY__";
-            const str = String(v);
-            return sensitive ? str : str.toLowerCase();
+          const canonical = (v: any) => {
+            if (v == null || v === "") return "__EMPTY__";
+            const s = String(v);
+            return sensitive ? s : s.toLowerCase();
           };
-          
-          const normalizedCellValue = normalizeValue(cellValue);
-          
-          // Create set of normalized filter values
-          const normalizedFilters = new Set(
-            filterValues.map(v => {
-              if (v === "(Empty)") return "__EMPTY__";
-              return sensitive ? v : String(v).toLowerCase();
-            })
-          );
-          
-          // Check if cell value matches any filter
-          if (!normalizedFilters.has(normalizedCellValue)) {
-            return false; // Exclude this row
-          }
+          const selected = new Set(filterValues.map((v) => sensitive ? v : String(v).toLowerCase()));
+          if (!selected.has(canonical(cellValue))) return false;
         }
 
         // Check all date filters in a single pass
@@ -1014,10 +998,6 @@ export function ExcelTable({
           if (filterList.length === 0) continue;
 
           const colIdx = parseInt(columnIndex);
-          
-          // Check if column index is valid
-          if (colIdx >= cells.length) continue;
-          
           const dataType = columnTypes[columnIndex] || "string";
           const cellValue = extractCellValue(cells[colIdx], dataType);
 
@@ -1051,9 +1031,6 @@ export function ExcelTable({
       const [columnIndex, direction] = sortEntries[0];
       const colIdx = parseInt(columnIndex);
       const dataType = columnTypes[columnIndex] || "string";
-
-      // Create a copy to avoid mutating the original array
-      processedRows = [...processedRows];
 
       // Pre-extract values for faster sorting
       const valueCache = new Map();
@@ -1163,7 +1140,7 @@ export function ExcelTableHeader({
 }: ExcelTableHeaderProps) {
   return (
     <TableHeader
-      className={cn("sticky top-1 z-10 bg-background", className)}
+      className={className}
       {...(props as React.ComponentPropsWithoutRef<"thead">)}
     >
       {children}
@@ -1213,52 +1190,34 @@ export function ExcelTableHead({
   }, [headerElement, dataType, context, columnIndex]); // Include columnIndex to prevent unnecessary updates
 
   const [optionCounts, setOptionCounts] = React.useState<Record<string, number>>({});
+  const [optionPage, setOptionPage] = React.useState(0);
   const [caseSensitiveLocal, setCaseSensitiveLocal] = React.useState(false);
+  const pageSize = 50;
   React.useEffect(() => {
     if (!context || !columnIndex || !context.rawRows) return;
-    
-    try {
-      const counts: Record<string, number> = {};
-      const values = new Set<string>();
-      const colIdx = parseInt(columnIndex);
-      
-      context.rawRows.forEach((row) => {
-        if (React.isValidElement(row)) {
-          const cells = React.Children.toArray((row.props as any).children);
-          
-          // Check if column index is valid
-          if (colIdx >= cells.length) return;
-          
-          const cellValue = extractCellValue(cells[colIdx], dataType);
-          
-          // Handle all value types including null/empty
-          let displayValue: string;
-          let countKey: string;
-          
-          if (cellValue === null || cellValue === undefined || cellValue === "") {
-            displayValue = "(Empty)";
-            countKey = "__EMPTY__";
-          } else if (dataType === "date" && cellValue instanceof Date && !isNaN(cellValue.getTime())) {
-            displayValue = formatDate(cellValue);
-            countKey = caseSensitiveLocal ? displayValue : displayValue.toLowerCase();
-          } else {
-            displayValue = String(cellValue);
-            countKey = caseSensitiveLocal ? displayValue : displayValue.toLowerCase();
-          }
-          
-          values.add(displayValue);
-          counts[countKey] = (counts[countKey] || 0) + 1;
-        }
-      });
-      
-      const sortedValues = Array.from(values).sort();
-      setUniqueValues(sortedValues);
-      setOptionCounts(counts);
-    } catch (error) {
-      console.error("Error extracting unique values:", error);
-      setUniqueValues([]);
-      setOptionCounts({});
-    }
+    const counts: Record<string, number> = {};
+    const values = new Set<string>();
+    context.rawRows.forEach((row) => {
+      if (React.isValidElement(row)) {
+        const cells = React.Children.toArray((row.props as any).children);
+        const cellValue = extractCellValue(
+          cells[parseInt(columnIndex)],
+          dataType
+        );
+        const v =
+          dataType === "date" && cellValue instanceof Date && !isNaN(cellValue.getTime())
+            ? formatDate(cellValue)
+            : String(cellValue ?? "");
+        const label = v === "" ? "(Empty)" : v;
+        const key = v === "" ? "__EMPTY__" : (caseSensitiveLocal ? v : v.toLowerCase());
+        values.add(label);
+        counts[key] = (counts[key] ?? 0) + 1;
+      }
+    });
+    const sortedValues = Array.from(values).sort();
+    setUniqueValues(sortedValues);
+    setOptionCounts(counts);
+    setOptionPage(0);
   }, [context?.rawRows, columnIndex, dataType, caseSensitiveLocal]);
 
   // Sync selectedFilters with context filters - use ref to prevent infinite loops
@@ -1409,6 +1368,7 @@ export function ExcelTableHead({
                             .toLowerCase()
                             .includes(searchTerm.toLowerCase())
                         )
+                        .slice(optionPage * pageSize, optionPage * pageSize + pageSize)
                         .map((value) => (
                           <div
                             key={value}
@@ -1451,6 +1411,25 @@ export function ExcelTableHead({
                             </span>
                           </div>
                         ))}
+                    </div>
+                    <div className="flex items-center justify-between mt-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        disabled={optionPage === 0}
+                        onClick={() => setOptionPage((p) => Math.max(0, p - 1))}
+                      >
+                        <ChevronLeft className="h-3 w-3" />
+                      </Button>
+                      <span className="text-xs">Page {optionPage + 1}</span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        disabled={(optionPage + 1) * pageSize >= uniqueValues.filter((v) => String(v).toLowerCase().includes(searchTerm.toLowerCase())).length}
+                        onClick={() => setOptionPage((p) => p + 1)}
+                      >
+                        <ChevronRight className="h-3 w-3" />
+                      </Button>
                     </div>
 
                     <div className="flex items-center justify-between mt-3 pt-3 border-t">
@@ -1506,8 +1485,8 @@ interface ExcelTableBodyProps extends React.ComponentPropsWithoutRef<"tbody"> {
 export function ExcelTableBody({
   children,
   pagination = false,
-  defaultRowsPerPage = 100,
-  rowsPerPageOptions = [10, 20, 50, 100, 200],
+  defaultRowsPerPage = 30,
+  rowsPerPageOptions = [10, 20, 30, 50, 100],
   ...props
 }: ExcelTableBodyProps) {
   const containerRef = React.useRef<HTMLTableSectionElement>(null);
