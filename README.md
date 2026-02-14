@@ -1,60 +1,86 @@
-# Cvians UI Components
+# Cvians UI
 
-[![npm version](https://badge.fury.io/js/@codvista%2Fcvians-excel-table.svg)](https://badge.fury.io/js/@codvista%2Fcvians-excel-table)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![TypeScript](https://img.shields.io/badge/%3C%2F%3E-TypeScript-%230074c1.svg)](http://www.typescriptlang.org/)
+## Overview
 
-A modern React/Preact component library providing Excel-like table functionality with advanced filtering, sorting, and data type awareness while maintaining the familiar HTML table syntax. Built for scalability with plans for comprehensive UI components across multiple categories.
+- Cvians is a TypeScript React/Preact component library designed to provide high‑quality, framework‑friendly UI building blocks.  
+- It follows shadcn-style conventions and ships with a lightweight CLI to install components into existing projects with predictable structure and utilities.  
+- The first stable component is an Excel‑like table that brings first‑class filtering, sorting, date handling, and pagination while preserving plain HTML table semantics.  
+- Components share consistent primitives, accessibility defaults, and styling practices; each component can be adopted incrementally via the CLI or direct imports.  
+- The table engine is context-driven and data‑type aware, enabling accurate numeric, boolean, and date operations without forcing consumers into a custom data model.  
+- The monorepo uses pnpm and Turborepo for builds, Changesets for versioning, and GitHub Actions for CI and automated releases.  
+- The design favors zero-backend coupling and SSR compatibility, making it usable across React frameworks (Next.js, Vite, CRA) and with Preact via compat.
 
-## ✨ Features
+## Problem It Solves
 
-- 🔍 **Excel-like filtering** - Checkbox-based filtering with unique values
-- 📊 **Multi-column sorting** - Click headers to sort ascending/descending  
-- 🎯 **Type-aware** - Handles string, number, date, and boolean data types
-- 🎨 **Customizable** - Built with Tailwind CSS and shadcn/ui design system
-- 📱 **Responsive** - Works seamlessly across all screen sizes
-- ♿ **Accessible** - Full keyboard navigation and screen reader support
-- 🔧 **Easy to use** - Same syntax as regular HTML tables
-- ⚡ **Framework agnostic** - Works with both React and Preact
-- 🚀 **Modern tooling** - TypeScript, ESM, and tree-shaking support
+- Teams need reliable, accessible UI pieces that fit existing React codebases without heavy rewrites or bespoke design systems.  
+- Many table/grid solutions are heavyweight or require non‑HTML data models; typical UI kits don’t provide Excel‑like interactions out of the box.  
+- Cvians standardizes component structure and styling, and provides a CLI to automate file placement and utilities. The Excel Table component addresses the concrete need for spreadsheet‑style interactions in internal tools and admin UIs.
 
-## 🚀 Quick Start
+## Target Users
 
-### Installation
+- Frontend engineers building React or Next.js apps who want table UX beyond basic HTML tables.  
+- Internal tools and operations dashboards that need quick, reliable filtering/sorting with minimal setup.  
+- Teams standardizing on shadcn-style component organization and Tailwind-based styling.  
+- Preact users that want React-compatible UI primitives via compat.
 
-Using npm:
-```bash
-npm install @codvista/cvians-excel-table
-```
+## Architecture & Technical Design
 
-**Using pnpm:**
-```bash
-pnpm add @codvista/cvians-excel-table
-```
+- Backend structure
+  - No backend included. This repository is a frontend UI library plus a CLI. Data is passed in via table cells; no server APIs or database are required.
+- Frontend structure
+  - Monorepo with pnpm/Turborepo. Current packages include the Excel Table component at packages/excel-table and the CLI at packages/cli.  
+  - Component model: shared UI primitives (shadcn-style), Tailwind utilities, and consistent prop conventions across components.  
+  - The Excel Table is implemented as a set of components and a context that manages filters, sorts, date filters, and pagination state. See [excel-table.tsx](/packages/excel-table/src/components/excel-table.tsx) and the context definition in [excel-table-context.tsx](/packages/excel-table/src/components/excel-table-context.tsx#L22-L40).  
+  - To keep server components clean, a wrapper re-exports client components without requiring consumers to sprinkle "use client". See [excel-table-wrapper.tsx](/packages/excel-table/src/components/excel-table-wrapper.tsx).  
+  - UI primitives are local shadcn-style components using Tailwind utilities, for example [table.tsx](/packages/excel-table/src/components/ui/table.tsx).
+- Database design approach
+  - None. The library is view‑layer only and operates on rendered table rows; it extracts and normalizes cell content for typed operations.
+- Key integrations
+  - Radix UI primitives (accordion, popover, select), lucide-react icons, Tailwind utility classes, and shadcn conventions. Preact supported via react/compat and a tiny framework layer ([framework.ts](/packages/excel-table/src/lib/framework.ts)).  
+  - Tooling: pnpm + Turborepo, TypeScript, ESLint, GitHub Actions, Changesets.
+- Patterns used
+  - Context-based state management for column registration, filter/sort coordination, and derived row computation.  
+  - Layered/Modular architecture: UI primitives, table logic, framework compatibility, and a thin SSR-friendly wrapper.  
+  - Single-responsibility components with memoization for rows/cells.
+- Scalability considerations
+  - Sorting uses a value cache during comparisons; raw rows are copied before in-place sort to avoid mutating state. See getFilteredAndSortedData in [excel-table.tsx](/packages/excel-table/src/components/excel-table.tsx#L955-L1083).  
+  - Extract/normalize paths handle strings, numbers, booleans, and dates consistently. See extractCellValue in [excel-table.tsx](/packages/excel-table/src/components/excel-table.tsx#L826-L877).  
+  - Row and cell components are memoized to avoid unnecessary re-renders.
 
-**Using yarn:**
-```bash
-yarn add @codvista/cvians-excel-table
-```
+## Key Features
 
-### CLI Installation (Recommended)
+- Component library fundamentals: TypeScript-first, shadcn-compatible primitives, accessible by default, and SSR-friendly exports.  
+- CLI-driven installation that places files and utilities consistently; components are adoptable individually.  
+- React and Preact compatibility without forking component logic.  
+- Current stable component — Excel Table:
+  - Excel-like filtering with unique-value checklists and per-column case sensitivity.  
+  - Typed sorting and filtering across string, number, boolean, and date columns, including relative and range-based date filters.  
+  - Optional client-side pagination with simple controls.  
+  - Preserves standard HTML table ergonomics for incremental adoption.
 
-Install the CLI tool globally:
-```bash
-npm install -g @codvista/cvians-cli
-```
+## Automation & Optimization
 
-Initialize your project:
-```bash
-cvians init
-```
+- CLI automates project setup (components/ui, lib/utils.ts, components.json) and component installation. See [init.ts](/packages/cli/src/commands/init.ts) and [add.ts](/packages/cli/src/commands/add.ts).  
+- CI builds, lints, and type-checks on push/PR; release workflow builds and publishes via Changesets. See [ci.yml](/.github/workflows/ci.yml) and [release.yml](/.github/workflows/release.yml).  
+- Turborepo task graph caches artifacts across packages; pnpm manages workspaces efficiently.
 
-Add components:
-```bash
-cvians add excel-table
-```
+## Installation & Setup
 
-## 📖 Basic Usage
+- Use in an app
+  - For the Excel Table:  
+    - npm: npm install @codvista/cvians-excel-table  
+    - pnpm: pnpm add @codvista/cvians-excel-table
+- Optional CLI
+  - npm install -g @codvista/cvians-cli  
+  - cvians init  
+  - cvians add excel-table  
+  - Future components will be installed with the same workflow as they are added to the library.
+- Monorepo development
+  - Node 18+, pnpm 8+.  
+  - pnpm install  
+  - pnpm build (or pnpm dev via Turborepo tasks).
+
+## Example Usage
 
 ```tsx
 import {
@@ -64,14 +90,14 @@ import {
   ExcelTableBody,
   ExcelTableRow,
   ExcelTableCell,
-} from "@codvista/cvians-excel-table"
+} from "@codvista/cvians-excel-table";
 
-function BasicExample() {
+export function BasicExample() {
   const data = [
-    { id: 1, name: "John Doe", age: 30, active: true, joinDate: "2023-01-15" },
-    { id: 2, name: "Jane Smith", age: 25, active: false, joinDate: "2023-03-20" },
-    { id: 3, name: "Bob Johnson", age: 35, active: true, joinDate: "2022-11-10" },
-  ]
+    { id: 1, name: "Alice", age: 30, active: true, joined: "2023-01-15" },
+    { id: 2, name: "Bob", age: 25, active: false, joined: "2023-03-20" },
+    { id: 3, name: "Carol", age: 35, active: true, joined: "2022-11-10" },
+  ];
 
   return (
     <ExcelTable>
@@ -81,135 +107,43 @@ function BasicExample() {
           <ExcelTableHead filterable sortable dataType="string">Name</ExcelTableHead>
           <ExcelTableHead filterable sortable dataType="number">Age</ExcelTableHead>
           <ExcelTableHead filterable dataType="boolean">Active</ExcelTableHead>
-          <ExcelTableHead sortable dataType="date">Join Date</ExcelTableHead>
+          <ExcelTableHead filterable sortable dataType="date">Joined</ExcelTableHead>
         </ExcelTableRow>
       </ExcelTableHeader>
-      <ExcelTableBody>
+      <ExcelTableBody pagination defaultRowsPerPage={20}>
         {data.map((row) => (
           <ExcelTableRow key={row.id}>
             <ExcelTableCell>{row.id}</ExcelTableCell>
             <ExcelTableCell>{row.name}</ExcelTableCell>
             <ExcelTableCell>{row.age}</ExcelTableCell>
-            <ExcelTableCell>{row.active ? 'true' : 'false'}</ExcelTableCell>
-            <ExcelTableCell>{row.joinDate}</ExcelTableCell>
+            <ExcelTableCell>{row.active ? "true" : "false"}</ExcelTableCell>
+            <ExcelTableCell>{row.joined}</ExcelTableCell>
           </ExcelTableRow>
         ))}
       </ExcelTableBody>
     </ExcelTable>
-  )
+  );
 }
 ```
 
-## 🎯 Data Types
+## Engineering Highlights
 
-The component supports different data types for proper sorting and filtering:
+- Performance decisions
+  - Memoized row/cell components reduce re-renders; sort uses value caching and avoids mutating raw rows. See [excel-table.tsx](/packages/excel-table/src/components/excel-table.tsx#L955-L1083).  
+  - Filters are applied in a single pass over rows, and date filters use normalized ISO strings for efficient matching.  
+- Security decisions
+  - No network or credential handling; library contains no secret management or remote calls. CI uses standard GitHub tokens for releases.  
+- Design trade-offs
+  - Single-column sort mirrors Excel’s straightforward UX and simplifies predictable ordering; multi-column could be added later.  
+  - Operates on rendered table cells to preserve HTML ergonomics; in exchange, consumers must ensure cell contents are canonical for their data types.  
+- Technology choices
+  - Radix UI for accessible primitives; Tailwind/shadcn for consistent design tokens; TypeScript for maintainability; Turborepo + pnpm for efficient multi-package builds; Changesets for safe versioning.
 
-- **`string`** - Text data (default)
-- **`number`** - Numeric data with proper numerical sorting
-- **`date`** - Date values (accepts various date formats)
-- **`boolean`** - Boolean values (true/false)
+## Future Improvements
 
-## 📚 API Reference
-
-### ExcelTable
-
-Main container component.
-
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `children` | `ReactNode` | - | Table content |
-| `className` | `string` | - | Additional CSS classes |
-
-### ExcelTableHead
-
-Table header cell with filtering and sorting capabilities.
-
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `children` | `ReactNode` | - | Header content |
-| `filterable` | `boolean` | `false` | Enable filtering for this column |
-| `sortable` | `boolean` | `false` | Enable sorting for this column |
-| `dataType` | `'string' \| 'number' \| 'date' \| 'boolean'` | `'string'` | Data type for proper filtering/sorting |
-| `className` | `string` | - | Additional CSS classes |
-
-### Other Components
-
-All other components (`ExcelTableHeader`, `ExcelTableBody`, `ExcelTableRow`, `ExcelTableCell`) accept standard HTML table attributes plus optional `className` prop.
-
-## 🎨 Styling
-
-The components use Tailwind CSS and follow the shadcn/ui design system. Customize appearance using:
-
-1. **className props** on any component
-2. **CSS variables** for theming
-3. **Tailwind modifiers** for responsive design
-
-Example custom styling:
-```tsx
-<ExcelTable className="border-2 border-blue-200">
-  <ExcelTableHeader className="bg-blue-50">
-    <ExcelTableRow>
-      <ExcelTableHead className="text-blue-900 font-bold">
-        Custom Header
-      </ExcelTableHead>
-    </ExcelTableRow>
-  </ExcelTableHeader>
-</ExcelTable>
-```
-
-## 🔧 Framework Compatibility
-
-### React
-Works out of the box with React 16.8+
-
-### Preact
-Compatible with Preact 10+ using preact/compat:
-
-```bash
-npm install preact
-```
-
-Configure your bundler to alias React to Preact:
-```js
-// vite.config.js
-export default {
-  resolve: {
-    alias: {
-      "react": "preact/compat",
-      "react-dom": "preact/compat"
-    }
-  }
-}
-```
-
-## 📦 Package Structure
-
-This is a monorepo containing:
-
-- `@codvista/cvians-excel-table` - Core components including Excel-like tables
-- `@codvista/cvians-cli` - CLI installation tool
-
-## 🔮 Roadmap
-
-Cvians is designed to be a comprehensive component library with multiple categories:
-
-- **Tables & Data Display** - Excel-like tables, data grids, charts
-- **Forms & Inputs** - Advanced form components, validators
-- **Navigation** - Menus, breadcrumbs, pagination
-- **Feedback** - Modals, notifications, progress indicators
-- **Layout** - Responsive containers, grids, sidebars
-
-## 🤝 Contributing
-
-Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md) for details.
-
-## 📄 License
-
-MIT License - see [LICENSE](LICENSE) file for details.
-
-## 🔗 Links
-
-- [Documentation](./DOCUMENTATION.md)
-- [Examples](./examples/README.md)
-- [GitHub](https://github.com/cod-vista/cvians)
-- [npm](https://www.npmjs.com/package/@codvista/cvians-excel-table)
+- Additional components across forms, navigation, feedback, and layout with the same conventions.  
+- Multi-column stable sort with priority indicators in table headers.  
+- Virtualized rendering for very large datasets in the table.  
+- Column resizing and reordering.  
+- Export helpers (CSV/Excel) respecting active filters and sort.  
+- Extended CLI recipes for framework-specific setup (Next.js App Router, Vite SSR).
